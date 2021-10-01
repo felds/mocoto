@@ -3,8 +3,22 @@
   "version": "0.0.1",
   "description": "Open source discord music bot",
   "main": "dist/index.js",
-  "scripts": {},
-  "keywords": ["discord", "music", "bot"],
+  "scripts": {
+    "dev": "nodemon src/index.ts"
+  },
+  "keywords": [
+    "discord",
+    "music",
+    "bot"
+  ],
   "author": "Felds (https://github.com/felds)",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^2.0.13",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
+  },
+  "dependencies": {
+    "dotenv": "^10.0.0"
+  }
 }
