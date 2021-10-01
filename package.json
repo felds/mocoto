@@ -1,0 +1,10 @@
+{
+  "name": "@felds/mocoto",
+  "version": "0.0.1",
+  "description": "Open source discord music bot",
+  "main": "dist/index.js",
+  "scripts": {},
+  "keywords": ["discord", "music", "bot"],
+  "author": "Felds (https://github.com/felds)",
+  "license": "MIT"
+}
