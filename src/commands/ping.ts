@@ -1,6 +1,5 @@
 import { ApplicationCommandData } from "discord.js";
-import { GUILD_ID } from "../config";
-import { client } from "../discord";
+import { addCommandHandler, registerCommand } from "../util/discord";
 
 const command: ApplicationCommandData = {
   type: "CHAT_INPUT",
@@ -8,16 +7,8 @@ const command: ApplicationCommandData = {
   description: "Replies with pong.",
 };
 
-client.once("ready", () => {
-  console.log(`Registering command /${command.name}`);
+registerCommand(command);
 
-  const acm = client.application?.commands;
-  if (acm) acm.create(command, GUILD_ID);
-});
-
-client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isCommand()) return;
-  if (interaction.commandName !== command.name) return;
-
+addCommandHandler(command, async (interaction) => {
   await interaction.reply({ content: "Pong!", ephemeral: true });
 });

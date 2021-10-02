@@ -16,5 +16,7 @@ async function main() {
 
   // once everything is loaded, log in
   client.login(TOKEN);
+
+  client.on("ready", () => console.log("Ready!!"));
 }
 main().catch((err) => console.error("Panic while setting up.", err));
