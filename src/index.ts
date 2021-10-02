@@ -1,17 +1,15 @@
+import path from "path";
 import { TOKEN } from "./config";
 import { client } from "./discord";
-import fs from "fs";
-import path from "path";
+import { importDir } from "./util/fs";
 
 console.clear();
 
-// import all commands from the commands folder
-const commandsDir = path.join(__dirname, "commands");
-Promise.all(
-  fs
-    .readdirSync(commandsDir)
-    .filter((f) => f.endsWith(".ts"))
-    .map((f) => import(path.join(commandsDir, f))),
-).then(() => {
+async function main() {
+  // import all commands from the commands folder
+  await importDir(path.join(__dirname, "commands"));
+
+  // once everything is loaded, log in
   client.login(TOKEN);
-});
+}
+main().catch((err) => console.error("Panic while setting up.", err));

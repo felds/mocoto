@@ -9,6 +9,8 @@ const command: ApplicationCommandData = {
 };
 
 client.once("ready", () => {
+  console.log(`Registering command /${command.name}`);
+
   const acm = client.application?.commands;
   if (acm) acm.create(command, GUILD_ID);
 });
@@ -17,5 +19,5 @@ client.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
   if (interaction.commandName !== command.name) return;
 
-  await interaction.reply({ content: "Pong", ephemeral: true });
+  await interaction.reply({ content: "Pong!", ephemeral: true });
 });
