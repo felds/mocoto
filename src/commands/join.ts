@@ -1,7 +1,9 @@
 import {
+  AudioPlayerStatus,
   createAudioPlayer,
   createAudioResource,
   joinVoiceChannel,
+  StreamType,
 } from "@discordjs/voice";
 import {
   ApplicationCommandData,
@@ -9,7 +11,10 @@ import {
   GuildMember,
   Message,
 } from "discord.js";
+import ytdl from "ytdl-core";
 import { addCommandHandler, registerCommand } from "../util/discord";
+
+const url = "https://www.youtube.com/watch?v=zObCCCsCo2I";
 
 const command: ApplicationCommandData = {
   type: "CHAT_INPUT",
@@ -35,6 +40,17 @@ addCommandHandler(command, async (interaction) => {
     guildId: voiceChannel.guildId,
     adapterCreator: voiceChannel.guild.voiceAdapterCreator,
   });
+
+  const stream = ytdl(url, { filter: "audioonly" });
+  const resource = createAudioResource(stream, {
+    inputType: StreamType.Arbitrary,
+  });
+  const player = createAudioPlayer();
+
+  player.play(resource);
+  connection.subscribe(player);
+
+  player.on(AudioPlayerStatus.Idle, () => connection.destroy());
 
   // const player = createAudioPlayer();
   // connection.subscribe(player);
