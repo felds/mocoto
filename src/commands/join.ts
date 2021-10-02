@@ -1,4 +1,8 @@
-import { joinVoiceChannel } from "@discordjs/voice";
+import {
+  createAudioPlayer,
+  createAudioResource,
+  joinVoiceChannel,
+} from "@discordjs/voice";
 import {
   ApplicationCommandData,
   CommandInteraction,
@@ -31,6 +35,13 @@ addCommandHandler(command, async (interaction) => {
     guildId: voiceChannel.guildId,
     adapterCreator: voiceChannel.guild.voiceAdapterCreator,
   });
+
+  // const player = createAudioPlayer();
+  // connection.subscribe(player);
+
+  // const mp3 = "...";
+  // const audio = createAudioResource(mp3);
+  // player.play(audio);
 
   to(interaction, "ok");
 });
