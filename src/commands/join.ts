@@ -14,18 +14,30 @@ import {
 import ytdl from "ytdl-core";
 import { addCommandHandler, registerCommand } from "../util/discord";
 
-const url = "https://www.youtube.com/watch?v=zObCCCsCo2I";
-
 const command: ApplicationCommandData = {
   type: "CHAT_INPUT",
   name: "join",
   description: "Join a voice channel.",
+  options: [
+    {
+      name: "url",
+      type: "STRING",
+      description: "An youtube URL to play",
+      required: true,
+    },
+  ],
 };
 
 registerCommand(command);
 
 addCommandHandler(command, async (interaction) => {
   if (!interaction.inGuild()) return;
+
+  const url = interaction.options.getString("url");
+  if (!url) {
+    to(interaction, `Invalid URL`);
+    return;
+  }
 
   const member = interaction.member as GuildMember;
   const voiceChannel = member.voice.channel;
@@ -41,24 +53,16 @@ addCommandHandler(command, async (interaction) => {
     adapterCreator: voiceChannel.guild.voiceAdapterCreator,
   });
 
+  const player = createAudioPlayer();
+  connection.subscribe(player);
+
   const stream = ytdl(url, { filter: "audioonly" });
   const resource = createAudioResource(stream, {
     inputType: StreamType.Arbitrary,
   });
-  const player = createAudioPlayer();
 
   player.play(resource);
-  connection.subscribe(player);
-
   player.on(AudioPlayerStatus.Idle, () => connection.destroy());
-
-  // const player = createAudioPlayer();
-  // connection.subscribe(player);
-
-  // const mp3 = "...";
-  // const audio = createAudioResource(mp3);
-  // player.play(audio);
-
   to(interaction, "ok");
 });
 
