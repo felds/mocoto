@@ -1,18 +1,22 @@
 import ytdl from "ytdl-core";
+import { Readable } from "stream";
 
 export interface Track {
-  getStream(): NodeJS.ReadableStream;
+  getStream(): Readable;
 }
 
 export class YoutubeTrack implements Track {
-  private title: string | null = null;
+  private title: string;
 
   constructor(private url: string) {
     this.title = "Parada do youtube";
   }
 
-  getStream(): NodeJS.ReadableStream {
-    const stream = ytdl(this.url, { filter: "audioonly" });
-    return stream;
+  toString() {
+    return this.title;
+  }
+
+  getStream(): Readable {
+    return ytdl(this.url, { filter: "audioonly" });
   }
 }

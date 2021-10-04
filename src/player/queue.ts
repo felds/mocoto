@@ -5,13 +5,8 @@ import {
   StreamType,
   VoiceConnection,
 } from "@discordjs/voice";
-import { Guild } from "discord.js";
-import ytdl from "ytdl-core";
-
-type Track = {
-  url: string;
-  title: string;
-};
+import { Collection } from "discord.js";
+import { Track } from "./track";
 
 type QueueState = "IDLE" | "PLAYING";
 
@@ -21,12 +16,12 @@ export class Queue {
   private audioPlayer: AudioPlayer | null = null;
   private pos: number = 0;
 
-  constructor(private guild: Guild) {}
+  constructor(private guildId: string) {}
 
   private getConnection(): VoiceConnection {
-    const connection = getVoiceConnection(this.guild.id);
+    const connection = getVoiceConnection(this.guildId);
     if (connection) return connection;
-    throw new Error(`Connection not found on guild ${this.guild.name}`);
+    throw new Error(`Connection not found on guild ${this.guildId}`);
   }
 
   private getAudioPlayer(): AudioPlayer {
@@ -45,7 +40,7 @@ export class Queue {
   public play() {
     if (this.state === "IDLE" && this.tracks[this.pos]) {
       const currTrack = this.tracks[this.pos];
-      const stream = ytdl(currTrack.url, { filter: "audioonly" });
+      const stream = currTrack.getStream();
 
       const resource = createAudioResource(stream, {
         inputType: StreamType.Arbitrary,
@@ -60,9 +55,10 @@ export class Queue {
   }
 }
 
-// const q = new Queue(voiceChannel.guild);
-// q.addTrack({
-//   url: "https://www.youtube.com/watch?v=5yx6BWlEVcY",
-//   title: "Chillhop Radio - jazzy & lofi hip hop beats 🐾",
-// });
-// q.play();
+const queues = new Collection<string, Queue>();
+export function getQueue(guildId: string): Queue {
+  const queue = queues.get(guildId) ?? new Queue(guildId);
+  queues.set(guildId, queue);
+
+  return queue;
+}

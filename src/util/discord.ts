@@ -18,7 +18,6 @@ export function addCommandHandler(
   client.on("interactionCreate", (interaction) => {
     if (!interaction.isCommand()) return;
     if (interaction.commandName !== command.name) return;
-    if (!interaction.inGuild()) return;
 
     return handler(interaction);
   });

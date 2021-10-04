@@ -1,5 +1,5 @@
 import { ApplicationCommandData } from "discord.js";
-import ytdl from "ytdl-core";
+import { getQueue } from "../player/queue";
 import { YoutubeTrack } from "../player/track";
 import { addCommandHandler, registerCommand } from "../util/discord";
 
@@ -18,12 +18,25 @@ const command: ApplicationCommandData = {
 
 registerCommand(command);
 
-addCommandHandler(command, (interaction) => {
+addCommandHandler(command, async (interaction) => {
+  const guild = interaction.guild!;
+  const queue = getQueue(guild.id);
+
   const url = interaction.options.getString("url");
+  if (url) {
+    const track = new YoutubeTrack(url);
+    queue.addTrack(track);
 
-  // if (url) {
-  //   const track = new YoutubeTrack(url);
+    await interaction.reply({
+      content: `🤘 _${track}_ added to your queue.`,
+      ephemeral: true,
+    });
+  }
 
-  //   console.log(track);
-  // }
+  console.log(queue);
+
+  console.log(interaction.replied);
+
+  // interaction.reply({ content: ";)", ephemeral: true });
+  // // }
 });
