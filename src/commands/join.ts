@@ -1,17 +1,10 @@
 import {
-  AudioPlayerStatus,
-  createAudioPlayer,
-  createAudioResource,
-  joinVoiceChannel,
-  StreamType,
-} from "@discordjs/voice";
-import {
   ApplicationCommandData,
-  CommandInteraction,
+  BaseGuildVoiceChannel,
+  GuildChannel,
   GuildMember,
-  Message,
 } from "discord.js";
-import ytdl from "ytdl-core";
+import { join } from "../discord";
 import { addCommandHandler, registerCommand } from "../util/discord";
 
 const command: ApplicationCommandData = {
@@ -20,10 +13,9 @@ const command: ApplicationCommandData = {
   description: "Join a voice channel.",
   options: [
     {
-      name: "url",
-      type: "STRING",
-      description: "An youtube URL to play",
-      required: true,
+      name: "channel",
+      type: "CHANNEL",
+      description: "The voice channel to join.",
     },
   ],
 };
@@ -33,46 +25,49 @@ registerCommand(command);
 addCommandHandler(command, async (interaction) => {
   if (!interaction.inGuild()) return;
 
-  const url = interaction.options.getString("url");
-  if (!url) {
-    to(interaction, `Invalid URL`);
-    return;
-  }
-
   const member = interaction.member as GuildMember;
-  const voiceChannel = member.voice.channel;
+  let channel: BaseGuildVoiceChannel | null = member.voice.channel;
 
-  if (!voiceChannel || !voiceChannel.isVoice()) {
-    to(interaction, "Cadê canal?");
-    return;
+  // override member channel
+  const optionChannel = interaction.options.getChannel(
+    "channel",
+  ) as GuildChannel | null;
+  if (optionChannel) {
+    if (!optionChannel.isVoice()) {
+      return interaction.reply({
+        content: `${optionChannel.name} is not a voice channel.`,
+        ephemeral: true,
+      });
+    }
+    channel = optionChannel;
   }
 
-  const connection = joinVoiceChannel({
-    channelId: voiceChannel.id,
-    guildId: voiceChannel.guildId,
-    adapterCreator: voiceChannel.guild.voiceAdapterCreator,
-  });
+  if (!channel) {
+    return interaction.reply({
+      content: `You must be connected to a voice channel or provide a custom channel.`,
+      ephemeral: true,
+    });
+  }
 
-  const player = createAudioPlayer();
-  connection.subscribe(player);
+  if (!channel.joinable) {
+    return interaction.reply({
+      content: `I can't join channel ${channel.name}.`,
+      ephemeral: true,
+    });
+  }
 
-  const stream = ytdl(url, { filter: "audioonly" });
-  const resource = createAudioResource(stream, {
-    inputType: StreamType.Arbitrary,
-  });
+  join(channel);
+  return interaction.reply({ content: `I'm in. 😎`, ephemeral: true });
 
-  player.play(resource);
-  player.on(AudioPlayerStatus.Idle, () => connection.destroy());
-  to(interaction, "ok");
+  // const player = createAudioPlayer();
+  // connection.subscribe(player);
+
+  // const stream = ytdl(url, { filter: "audioonly" });
+  // const resource = createAudioResource(stream, {
+  //   inputType: StreamType.Arbitrary,
+  // });
+
+  // player.play(resource);
+  // player.on(AudioPlayerStatus.Idle, () => connection.destroy());
+  // to(interaction, "ok");
 });
-
-async function to(interaction: CommandInteraction, content: string) {
-  const reply = (await interaction.reply({
-    content,
-    // ephemeral: true,
-    fetchReply: true,
-  })) as Message;
-  setTimeout(() => reply.delete(), 1000);
-
-  return reply;
-}
