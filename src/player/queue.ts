@@ -1,5 +1,7 @@
 import {
   AudioPlayer,
+  AudioPlayerState,
+  AudioPlayerStatus,
   createAudioResource,
   getVoiceConnection,
   StreamType,
@@ -27,10 +29,20 @@ export class Queue {
   private getAudioPlayer(): AudioPlayer {
     if (!this.audioPlayer) {
       this.audioPlayer = new AudioPlayer();
+      this.audioPlayer.on("stateChange", this.handleStateChange.bind(this));
       this.getConnection().subscribe(this.audioPlayer);
     }
 
     return this.audioPlayer;
+  }
+
+  private handleStateChange(
+    oldState: AudioPlayerState,
+    newState: AudioPlayerState,
+  ) {
+    if (newState.status === AudioPlayerStatus.Idle) {
+      this.next();
+    }
   }
 
   public addTrack(track: Track): void {
@@ -52,6 +64,10 @@ export class Queue {
     }
 
     throw new Error("Whoopsie.");
+  }
+
+  public next() {
+    console.log("Manda pra próxima");
   }
 
   public isIdle() {
