@@ -33,19 +33,10 @@ addCommandHandler(command, async (interaction) => {
     }
 
     await interaction.reply({
-      content: `🤘 _${track}_ added to your queue.`,
+      content: `🤘 _"${track}"_ added to your queue.`,
       ephemeral: true,
     });
   }
 
-  // @TODO check if queue is paused and play it
-
-  // @TODO if not paused nor with url, error
-
-  console.log(queue);
-
-  console.log(interaction.replied);
-
-  // interaction.reply({ content: ";)", ephemeral: true });
-  // // }
+  interaction.replied || interaction.reply({ content: "👌", ephemeral: true });
 });
