@@ -67,7 +67,8 @@ export class Queue {
   }
 
   public next() {
-    console.log("Manda pra próxima");
+    this.pos++;
+    this.play();
   }
 
   public isIdle() {
