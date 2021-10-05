@@ -12,6 +12,7 @@ const command: ApplicationCommandData = {
       name: "url",
       type: "STRING",
       description: "What should I play?",
+      required: true,
     },
   ],
 };
@@ -27,11 +28,19 @@ addCommandHandler(command, async (interaction) => {
     const track = new YoutubeTrack(url);
     queue.addTrack(track);
 
+    if (queue.isIdle()) {
+      queue.play();
+    }
+
     await interaction.reply({
       content: `🤘 _${track}_ added to your queue.`,
       ephemeral: true,
     });
   }
+
+  // @TODO check if queue is paused and play it
+
+  // @TODO if not paused nor with url, error
 
   console.log(queue);
 

@@ -8,7 +8,7 @@ import {
 import { Collection } from "discord.js";
 import { Track } from "./track";
 
-type QueueState = "IDLE" | "PLAYING";
+type QueueState = "IDLE" | "PLAYING" | "PAUSED";
 
 export class Queue {
   private tracks: Track[] = [];
@@ -52,6 +52,10 @@ export class Queue {
     }
 
     throw new Error("Whoopsie.");
+  }
+
+  public isIdle() {
+    return this.state === "IDLE";
   }
 }
 
