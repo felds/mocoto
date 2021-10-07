@@ -10,11 +10,8 @@ import {
 import { Collection } from "discord.js";
 import { Track } from "./track";
 
-type QueueState = "IDLE" | "PLAYING" | "PAUSED";
-
 export class Queue {
   private tracks: Track[] = [];
-  private state: QueueState = "IDLE";
   private audioPlayer: AudioPlayer | null = null;
   private pos: number = 0;
 
@@ -41,7 +38,9 @@ export class Queue {
     newState: AudioPlayerState,
   ) {
     if (newState.status === AudioPlayerStatus.Idle) {
-      this.next();
+      this.pos++;
+      this.play();
+      return;
     }
   }
 
@@ -49,30 +48,48 @@ export class Queue {
     this.tracks.push(track);
   }
 
-  public play() {
-    if (this.state === "IDLE" && this.tracks[this.pos]) {
-      const currTrack = this.tracks[this.pos];
-      const stream = currTrack.getStream();
+  public play(): void {
+    const player = this.getAudioPlayer();
+    switch (player.state.status) {
+      case AudioPlayerStatus.Idle:
+        const currTrack = this.tracks[this.pos];
+        if (!currTrack) return; // @todo throw error?
 
-      const resource = createAudioResource(stream, {
-        inputType: StreamType.Arbitrary,
-      });
-
-      this.getAudioPlayer().play(resource);
-
-      return;
+        const stream = currTrack.getStream();
+        const resource = createAudioResource(stream, {
+          inputType: StreamType.Arbitrary,
+        });
+        this.getAudioPlayer().play(resource);
+        return;
+      case AudioPlayerStatus.Paused:
+      case AudioPlayerStatus.AutoPaused: // maybe? must check exactly how this works
+        player.unpause();
+        return;
     }
-
-    throw new Error("Whoopsie.");
   }
 
-  public next() {
-    this.pos++;
-    this.play();
+  public pause() {
+    this.getAudioPlayer().pause();
+  }
+
+  /**
+   * Stops playing, move pos to the end of the queue and set as idle
+   */
+  public stop() {
+    this.getAudioPlayer().stop(true);
+    this.pos = this.tracks.length;
+  }
+
+  /**
+   * Empties the queue and resets the pos
+   */
+  public clear() {
+    this.tracks = [];
+    this.stop();
   }
 
   public isIdle() {
-    return this.state === "IDLE";
+    return this.getAudioPlayer().state.status === AudioPlayerStatus.Idle;
   }
 }
 
