@@ -28,6 +28,6 @@
     "ffmpeg-static": "^4.4.0",
     "libsodium-wrappers": "^0.7.9",
     "sodium": "^3.0.2",
-    "ytdl-core": "^4.9.1"
+    "youtube-dl-wrap": "^2.1.1"
   }
 }
