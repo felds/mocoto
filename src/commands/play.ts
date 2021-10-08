@@ -1,7 +1,8 @@
-import { ApplicationCommandData } from "discord.js";
+import { getVoiceConnection } from "@discordjs/voice";
+import { ApplicationCommandData, GuildMember } from "discord.js";
 import { getQueue } from "../player/queue";
 import { YoutubeDlTrack } from "../player/track";
-import { addCommandHandler, registerCommand } from "../util/discord";
+import { addCommandHandler, join, registerCommand } from "../util/discord";
 
 const command: ApplicationCommandData = {
   name: "play",
@@ -20,8 +21,14 @@ const command: ApplicationCommandData = {
 registerCommand(command);
 
 addCommandHandler(command, async (interaction) => {
+  const member = interaction.member as GuildMember;
   const guild = interaction.guild!;
   const queue = getQueue(guild.id);
+
+  const connection = getVoiceConnection(guild.id);
+  if (!connection) {
+    join(member);
+  }
 
   const url = interaction.options.getString("url");
   if (url) {
