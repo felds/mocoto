@@ -1,11 +1,12 @@
 import { Readable } from "stream";
+import y from "ytdl-core-discord";
 import { createYtdl } from "../util/ytdl";
 
 const ytdl = createYtdl();
 
 export interface Track {
   toString(): string;
-  getSource(): string | Readable;
+  getSource(): Promise<string | Readable>;
 }
 
 export class YoutubeDlTrack implements Track {
@@ -26,8 +27,8 @@ export class YoutubeDlTrack implements Track {
     return this.title;
   }
 
-  getSource() {
+  async getSource() {
     if (!this.url) throw new Error(`Unknown URL.`);
-    return this.url;
+    return y(this.url);
   }
 }
