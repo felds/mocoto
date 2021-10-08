@@ -1,8 +1,9 @@
-import ytdl from "ytdl-core";
 import { Readable } from "stream";
+import { createYtdl } from "../util/ytdl";
+import stream from "stream";
 
 export interface Track {
-  getStream(): Readable;
+  getStream(): Promise<Readable>;
 }
 
 export class YoutubeTrack implements Track {
@@ -16,7 +17,28 @@ export class YoutubeTrack implements Track {
     return this.title;
   }
 
-  getStream(): Readable {
-    return ytdl(this.url, { filter: "audioonly" });
+  async getStream() {
+    const ytdl = await createYtdl();
+
+    /** @todo catch errors when there is no opus version */
+    const str: Readable = ytdl.execStream([
+      this.url,
+      "-f",
+      "bestaudio[acodec=opus]",
+      "--http-chunk-size=10485760",
+    ]);
+
+    ["close", "data", "end", "error", "pause", "readable", "resume"].forEach(
+      (ev) => {
+        str.on(ev, (...x) => console.log(ev, x));
+      },
+    );
+
+    const pt = new stream.PassThrough(); // { highWaterMark: 1024 });
+    str.pipe(pt);
+
+    return pt;
   }
 }
+
+// https://stackoverflow.com/questions/55959479/error-err-stream-premature-close-premature-close-in-node-pipeline-stream

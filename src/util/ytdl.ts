@@ -5,7 +5,7 @@ import fs from "fs";
 export async function createYtdl(
   forceDownload = false,
 ): Promise<YoutubeDlWrap> {
-  const filename = path.join(__dirname, "var", "youtube-dl");
+  const filename = path.join(process.cwd(), "var", "youtube-dl");
   const maxAge = 86_400_000; // 1_000 * 60 * 60 * 24; // 24hs
   let stat;
   try {

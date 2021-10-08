@@ -28,6 +28,7 @@
     "ffmpeg-static": "^4.4.0",
     "libsodium-wrappers": "^0.7.9",
     "sodium": "^3.0.2",
-    "youtube-dl-wrap": "^2.1.1"
+    "youtube-dl-wrap": "^2.1.1",
+    "youtube-scrapper": "^1.1.8"
   }
 }
