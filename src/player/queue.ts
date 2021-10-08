@@ -50,13 +50,14 @@ export class Queue {
 
   public async play(): Promise<void> {
     const player = this.getAudioPlayer();
+
     switch (player.state.status) {
       case AudioPlayerStatus.Idle:
         const currTrack = this.tracks[this.pos];
         if (!currTrack) return; // @todo throw error?
 
-        const stream = await currTrack.getStream();
-        const resource = createAudioResource(stream, {
+        const source = currTrack.getSource();
+        const resource = createAudioResource(source, {
           inputType: StreamType.Arbitrary,
           inlineVolume: true,
         });

@@ -1,44 +1,33 @@
 import { Readable } from "stream";
 import { createYtdl } from "../util/ytdl";
-import stream from "stream";
+
+const ytdl = createYtdl();
 
 export interface Track {
-  getStream(): Promise<Readable>;
+  toString(): string;
+  getSource(): string | Readable;
 }
 
-export class YoutubeTrack implements Track {
-  private title: string;
+export class YoutubeDlTrack implements Track {
+  title?: string;
+  url?: string;
 
-  constructor(private url: string) {
-    this.title = "Parada do youtube";
+  /** @todo catch errors */
+  static async fromUrl(url: string) {
+    const info = await (await ytdl).getVideoInfo([url, "-f", "bestaudio"]);
+    const obj = new YoutubeDlTrack();
+    obj.url = info.url;
+    obj.title = info.title;
+    return obj;
   }
 
   toString() {
+    if (!this.title) throw new Error(`Unknown title.`);
     return this.title;
   }
 
-  async getStream() {
-    const ytdl = await createYtdl();
-
-    /** @todo catch errors when there is no opus version */
-    const str: Readable = ytdl.execStream([
-      this.url,
-      "-f",
-      "bestaudio[acodec=opus]",
-      "--http-chunk-size=10485760",
-    ]);
-
-    ["close", "data", "end", "error", "pause", "readable", "resume"].forEach(
-      (ev) => {
-        str.on(ev, (...x) => console.log(ev, x));
-      },
-    );
-
-    const pt = new stream.PassThrough(); // { highWaterMark: 1024 });
-    str.pipe(pt);
-
-    return pt;
+  getSource() {
+    if (!this.url) throw new Error(`Unknown URL.`);
+    return this.url;
   }
 }
-
-// https://stackoverflow.com/questions/55959479/error-err-stream-premature-close-premature-close-in-node-pipeline-stream

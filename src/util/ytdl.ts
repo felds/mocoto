@@ -17,7 +17,6 @@ export async function createYtdl(
   if (forceDownload || !stat || Date.now() - stat.mtimeMs > maxAge) {
     await YoutubeDlWrap.downloadFromGithub(filename);
     fs.chmodSync(filename, "0755");
-    console.log(fs.statSync(filename));
     console.log("Downloaded latest youtube-dl version from github.");
   } else {
     console.log("No need to download youtube-dl.");

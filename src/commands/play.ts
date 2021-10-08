@@ -1,6 +1,6 @@
 import { ApplicationCommandData } from "discord.js";
 import { getQueue } from "../player/queue";
-import { YoutubeTrack } from "../player/track";
+import { YoutubeDlTrack } from "../player/track";
 import { addCommandHandler, registerCommand } from "../util/discord";
 
 const command: ApplicationCommandData = {
@@ -25,16 +25,17 @@ addCommandHandler(command, async (interaction) => {
 
   const url = interaction.options.getString("url");
   if (url) {
-    const track = new YoutubeTrack(url);
+    await interaction.deferReply({ ephemeral: true });
+
+    const track = await YoutubeDlTrack.fromUrl(url);
     queue.addTrack(track);
 
     if (queue.isIdle()) {
       queue.play();
     }
 
-    await interaction.reply({
+    await interaction.editReply({
       content: `🤘 _"${track}"_ added to your queue.`,
-      ephemeral: true,
     });
   }
 
