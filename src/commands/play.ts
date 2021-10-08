@@ -1,7 +1,7 @@
 import { getVoiceConnection } from "@discordjs/voice";
 import { ApplicationCommandData, GuildMember } from "discord.js";
 import { getQueue } from "../player/queue";
-import { YoutubeDlTrack } from "../player/track";
+import { YoutubeTrack } from "../player/track";
 import { addCommandHandler, join, registerCommand } from "../util/discord";
 
 const command: ApplicationCommandData = {
@@ -34,7 +34,7 @@ addCommandHandler(command, async (interaction) => {
   if (url) {
     await interaction.deferReply({ ephemeral: true });
 
-    const track = await YoutubeDlTrack.fromUrl(url);
+    const track = await YoutubeTrack.fromUrl(url);
     queue.addTrack(track);
 
     if (queue.isIdle()) {

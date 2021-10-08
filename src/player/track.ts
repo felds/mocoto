@@ -1,20 +1,19 @@
 import { Readable } from "stream";
 import y from "ytdl-core";
 
-const MB = 1_048_576; // 1MB = 1024**2
-
 export interface Track {
   toString(): string;
   getSource(): Promise<string | Readable>;
+  supports(query: string): Promise<boolean>;
 }
 
-export class YoutubeDlTrack implements Track {
+export class YoutubeTrack implements Track {
   constructor(private info: y.videoInfo) {}
 
   /** @todo catch errors */
   static async fromUrl(url: string) {
     const info = await y.getInfo(url);
-    return new YoutubeDlTrack(info);
+    return new YoutubeTrack(info);
   }
 
   toString() {
@@ -25,8 +24,11 @@ export class YoutubeDlTrack implements Track {
     return y.downloadFromInfo(this.info, {
       filter: "audioonly",
       dlChunkSize: 0,
-      // dlChunkSize: 0.5 * MB,
-      // highWaterMark: 0.25 * MB,
     });
+  }
+
+  /** @todo */
+  async supports(query: string) {
+    return true;
   }
 }
