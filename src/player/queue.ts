@@ -44,6 +44,18 @@ export class Queue {
     }
   }
 
+  private playForRealsies() {
+    const currTrack = this.tracks[this.pos];
+    if (!currTrack) return; // @todo throw error?
+
+    const source = currTrack.getSource();
+    const resource = createAudioResource(source, {
+      inputType: StreamType.Arbitrary,
+      inlineVolume: true,
+    });
+    this.getAudioPlayer().play(resource);
+  }
+
   public addTrack(track: Track): void {
     this.tracks.push(track);
   }
@@ -53,15 +65,7 @@ export class Queue {
 
     switch (player.state.status) {
       case AudioPlayerStatus.Idle:
-        const currTrack = this.tracks[this.pos];
-        if (!currTrack) return; // @todo throw error?
-
-        const source = currTrack.getSource();
-        const resource = createAudioResource(source, {
-          inputType: StreamType.Arbitrary,
-          inlineVolume: true,
-        });
-        this.getAudioPlayer().play(resource);
+        this.playForRealsies();
         return;
       case AudioPlayerStatus.Paused:
       case AudioPlayerStatus.AutoPaused: // maybe? must check exactly how this works
@@ -78,7 +82,7 @@ export class Queue {
    * Stops playing, move pos to the end of the queue and set as idle
    */
   public stop() {
-    this.getAudioPlayer().stop(true);
+    this.getAudioPlayer().stop();
     this.pos = this.tracks.length;
   }
 
@@ -88,6 +92,16 @@ export class Queue {
   public clear() {
     this.tracks = [];
     this.stop();
+  }
+
+  public prev() {
+    if (this.pos > 0) this.pos--;
+    this.playForRealsies();
+  }
+
+  public next() {
+    if (this.pos < this.tracks.length - 1) this.pos++;
+    this.playForRealsies();
   }
 
   public isIdle() {
