@@ -44,11 +44,14 @@ export class Queue {
     }
   }
 
-  private playForRealsies() {
+  private async playForRealsies() {
     const currTrack = this.tracks[this.pos];
-    if (!currTrack) return; // @todo throw error?
+    if (!currTrack) {
+      this.getAudioPlayer().stop();
+      return;
+    }
 
-    const source = currTrack.getSource();
+    const source = await currTrack.getSource();
     const resource = createAudioResource(source, {
       inputType: StreamType.Arbitrary,
       inlineVolume: true,
@@ -56,16 +59,16 @@ export class Queue {
     this.getAudioPlayer().play(resource);
   }
 
-  public addTrack(track: Track): void {
+  async addTrack(track: Track) {
     this.tracks.push(track);
   }
 
-  public async play(): Promise<void> {
+  async play() {
     const player = this.getAudioPlayer();
 
     switch (player.state.status) {
       case AudioPlayerStatus.Idle:
-        this.playForRealsies();
+        await this.playForRealsies();
         return;
       case AudioPlayerStatus.Paused:
       case AudioPlayerStatus.AutoPaused: // maybe? must check exactly how this works
@@ -74,14 +77,14 @@ export class Queue {
     }
   }
 
-  public pause() {
+  async pause() {
     this.getAudioPlayer().pause();
   }
 
   /**
    * Stops playing, move pos to the end of the queue and set as idle
    */
-  public stop() {
+  async stop() {
     this.getAudioPlayer().stop();
     this.pos = this.tracks.length;
   }
@@ -89,22 +92,22 @@ export class Queue {
   /**
    * Empties the queue and resets the pos
    */
-  public clear() {
+  async clear() {
     this.tracks = [];
     this.stop();
   }
 
-  public prev() {
+  async prev() {
     if (this.pos > 0) this.pos--;
-    this.playForRealsies();
+    await this.playForRealsies();
   }
 
-  public next() {
-    if (this.pos < this.tracks.length - 1) this.pos++;
-    this.playForRealsies();
+  async next() {
+    if (this.pos < this.tracks.length) this.pos++;
+    await this.playForRealsies();
   }
 
-  public isIdle() {
+  isIdle() {
     return this.getAudioPlayer().state.status === AudioPlayerStatus.Idle;
   }
 

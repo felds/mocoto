@@ -1,33 +1,32 @@
 import { Readable } from "stream";
-import { createYtdl } from "../util/ytdl";
+import y from "ytdl-core";
 
-const ytdl = createYtdl();
+const MB = 1_048_576; // 1MB = 1024**2
 
 export interface Track {
   toString(): string;
-  getSource(): string | Readable;
+  getSource(): Promise<string | Readable>;
 }
 
 export class YoutubeDlTrack implements Track {
-  title?: string;
-  url?: string;
+  constructor(private info: y.videoInfo) {}
 
   /** @todo catch errors */
   static async fromUrl(url: string) {
-    const info = await (await ytdl).getVideoInfo([url, "-f", "bestaudio"]);
-    const obj = new YoutubeDlTrack();
-    obj.url = info.url;
-    obj.title = info.title;
-    return obj;
+    const info = await y.getInfo(url);
+    return new YoutubeDlTrack(info);
   }
 
   toString() {
-    if (!this.title) throw new Error(`Unknown title.`);
-    return this.title;
+    return this.info.videoDetails.title;
   }
 
-  getSource() {
-    if (!this.url) throw new Error(`Unknown URL.`);
-    return this.url;
+  async getSource() {
+    return y.downloadFromInfo(this.info, {
+      filter: "audioonly",
+      dlChunkSize: 0,
+      // dlChunkSize: 0.5 * MB,
+      // highWaterMark: 0.25 * MB,
+    });
   }
 }
