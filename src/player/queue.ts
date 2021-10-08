@@ -46,7 +46,10 @@ export class Queue {
 
   private async playForRealsies() {
     const currTrack = this.tracks[this.pos];
-    if (!currTrack) return; // @todo throw error?
+    if (!currTrack) {
+      this.getAudioPlayer().stop();
+      return;
+    }
 
     const source = await currTrack.getSource();
     const resource = createAudioResource(source, {
@@ -100,7 +103,7 @@ export class Queue {
   }
 
   async next() {
-    if (this.pos < this.tracks.length - 1) this.pos++;
+    if (this.pos < this.tracks.length) this.pos++;
     await this.playForRealsies();
   }
 
