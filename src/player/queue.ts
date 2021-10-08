@@ -30,7 +30,7 @@ export class Queue {
       this.getConnection().subscribe(this.audioPlayer);
     }
 
-    return this.audioPlayer;
+    return this.audioPlayer.;
   }
 
   private handleStateChange(
@@ -106,6 +106,10 @@ export class Queue {
 
   public isIdle() {
     return this.getAudioPlayer().state.status === AudioPlayerStatus.Idle;
+  }
+
+  public isPlayng() {
+    return this.getAudioPlayer().state.status === AudioPlayerStatus.Playing;
   }
 }
 
