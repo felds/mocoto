@@ -1,7 +1,7 @@
 import path from "path";
-import { TOKEN } from "./config";
-import { client } from "./discord";
-import { importDir } from "./util/fs";
+import { TOKEN } from "./src/config";
+import { client } from "./src/discord";
+import { importDir } from "./src/util/fs";
 import { generateDependencyReport } from "@discordjs/voice";
 
 // make nodemon more usable
