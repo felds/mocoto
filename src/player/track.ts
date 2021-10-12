@@ -1,4 +1,5 @@
 import { Readable } from "stream";
+import ytdl from "ytdl-core";
 import y from "ytdl-core";
 
 export interface Track {
@@ -21,10 +22,12 @@ export class YoutubeTrack implements Track {
   }
 
   async getSource() {
-    return y.downloadFromInfo(this.info, {
+    const format = ytdl.chooseFormat(this.info.formats, {
+      quality: "highestaudio",
       filter: "audioonly",
-      dlChunkSize: 0,
     });
+
+    return format.url;
   }
 
   /** @todo */
@@ -32,3 +35,4 @@ export class YoutubeTrack implements Track {
     return true;
   }
 }
+// https://www.youtube.com/watch?v=TVaYeXGcA4E
