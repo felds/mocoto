@@ -20,3 +20,16 @@ async function main() {
   client.on("ready", () => console.log("Ready!!"));
 }
 main().catch((err) => console.error("Panic while setting up.", err));
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.log("?".repeat(120));
+  console.log("Unhandled Rejection at:", promise, "reason:", reason);
+});
+
+process.on(
+  "uncaughtException",
+  (error: Error, origin: NodeJS.UncaughtExceptionOrigin) => {
+    console.log("!".repeat(120));
+    console.log("Uncaught Exception: ", error, origin);
+  },
+);

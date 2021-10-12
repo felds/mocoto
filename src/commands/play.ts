@@ -25,6 +25,7 @@ addCommandHandler(command, async (interaction) => {
   const guild = interaction.guild!;
   const queue = getQueue(guild.id);
 
+  /** @fixme When "disconnected" with leave, getVoiceConnection still returns a connection. */
   const connection = getVoiceConnection(guild.id);
   if (!connection) {
     join(member);
@@ -47,4 +48,12 @@ addCommandHandler(command, async (interaction) => {
   }
 
   interaction.replied || interaction.reply({ content: "👌", ephemeral: true });
+
+  countSecs();
 });
+
+let secs = 0;
+function countSecs() {
+  console.log("secs", secs++);
+  setTimeout(countSecs, 1000);
+}
