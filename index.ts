@@ -1,8 +1,8 @@
-import path from "path";
+import { generateDependencyReport } from "@discordjs/voice";
+import { join } from "path";
 import { TOKEN } from "./src/config";
 import { client } from "./src/discord";
 import { importDir } from "./src/util/fs";
-import { generateDependencyReport } from "@discordjs/voice";
 
 // make nodemon more usable
 console.clear();
@@ -12,7 +12,7 @@ console.log(generateDependencyReport());
 
 async function main() {
   // import all commands from the commands folder
-  await importDir(path.join(__dirname, "commands"));
+  await importDir(join(__dirname, "src/commands"));
 
   // once everything is loaded, log in
   client.login(TOKEN);
