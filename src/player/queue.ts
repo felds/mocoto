@@ -111,7 +111,7 @@ export class Queue {
     return this.getAudioPlayer().state.status === AudioPlayerStatus.Idle;
   }
 
-  public isPlayng() {
+  public isPlaying() {
     return this.getAudioPlayer().state.status === AudioPlayerStatus.Playing;
   }
 }
