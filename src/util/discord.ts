@@ -60,6 +60,7 @@ export function join(
   return joinVoiceChannel({
     channelId: channel.id,
     guildId: channel.guildId,
+    // @ts-ignore
     adapterCreator: channel.guild.voiceAdapterCreator,
   });
 }
