@@ -110,6 +110,10 @@ export class Queue {
   isIdle() {
     return this.getAudioPlayer().state.status === AudioPlayerStatus.Idle;
   }
+
+  public isPlaying() {
+    return this.getAudioPlayer().state.status === AudioPlayerStatus.Playing;
+  }
 }
 
 const queues = new Collection<string, Queue>();
