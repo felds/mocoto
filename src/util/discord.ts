@@ -20,12 +20,13 @@ export function registerCommand(command: ApplicationCommandData): void {
 
 export function addCommandHandler(
   command: ApplicationCommandData,
-  handler: (interaction: CommandInteraction) => any,
+  handler: (interaction: CommandInteraction) => Promise<void>,
 ) {
   client.on("interactionCreate", (interaction) => {
     if (!interaction.isCommand()) return;
     if (interaction.commandName !== command.name) return;
 
+    /** @todo add error checkgin right here */
     return handler(interaction);
   });
 }
@@ -59,6 +60,7 @@ export function join(
   return joinVoiceChannel({
     channelId: channel.id,
     guildId: channel.guildId,
+    // @ts-ignore
     adapterCreator: channel.guild.voiceAdapterCreator,
   });
 }

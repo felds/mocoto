@@ -1,4 +1,9 @@
-import { ApplicationCommandData, GuildChannel, GuildMember } from "discord.js";
+import {
+  ApplicationCommandData,
+  GuildChannel,
+  GuildMember,
+  MessageEmbed,
+} from "discord.js";
 import {
   addCommandHandler,
   join,
@@ -31,7 +36,11 @@ addCommandHandler(command, async (interaction) => {
 
   try {
     join(member, channelOption);
-    return interaction.reply({ content: `I'm in. 😎`, ephemeral: true });
+
+    return interaction.reply({
+      content: `I'm in. 😎`,
+      ephemeral: true,
+    });
   } catch (err) {
     if (err instanceof JoinError)
       return interaction.reply({ content: err.message, ephemeral: true });

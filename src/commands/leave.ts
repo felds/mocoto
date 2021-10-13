@@ -10,7 +10,7 @@ const command: ApplicationCommandData = {
 
 registerCommand(command);
 
-addCommandHandler(command, (interaction) => {
+addCommandHandler(command, async (interaction) => {
   if (!interaction.inGuild()) return;
 
   const connection = getVoiceConnection(interaction.guildId);
