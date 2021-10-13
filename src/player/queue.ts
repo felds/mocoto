@@ -63,6 +63,11 @@ export class Queue {
     this.tracks.push(track);
   }
 
+  getTracks(): Track[] {
+    return this.tracks.slice(Math.max(0, this.pos - 1));
+    // return this.tracks.
+  }
+
   async play() {
     const player = this.getAudioPlayer();
 
