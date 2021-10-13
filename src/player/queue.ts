@@ -30,7 +30,7 @@ export class Queue {
       this.getConnection().subscribe(this.audioPlayer);
     }
 
-    return this.audioPlayer.;
+    return this.audioPlayer;
   }
 
   private handleStateChange(
