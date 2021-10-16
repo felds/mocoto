@@ -114,6 +114,15 @@ export class Queue {
   public isPlaying() {
     return this.getAudioPlayer().state.status === AudioPlayerStatus.Playing;
   }
+
+  public isPaused() {
+    const { status } = this.getAudioPlayer().state;
+    
+    return (
+      status === AudioPlayerStatus.Paused ||
+      status === AudioPlayerStatus.AutoPaused
+    );
+  }
 }
 
 const queues = new Collection<string, Queue>();
