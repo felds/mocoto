@@ -3,6 +3,7 @@ import { ApplicationCommandData, GuildMember, MessageEmbed } from "discord.js";
 import { getQueue } from "../player/queue";
 import { Track, YoutubeTrack } from "../player/track";
 import { addCommandHandler, join, registerCommand } from "../util/discord";
+import ytdl from "ytdl-core";
 
 const command: ApplicationCommandData = {
   name: "play",
@@ -59,7 +60,11 @@ function countSecs() {
   setTimeout(countSecs, 1000);
 }
 
-function createEmbed(author: GuildMember, track: Track): MessageEmbed {
+function createEmbed(
+  author: GuildMember,
+  track: Track,
+): MessageEmbed {
+ 
   const embed = new MessageEmbed()
     .setColor(0xed9420)
     .setDescription([`${author} added a new track:`, `**${track}**`].join("\n"))
@@ -70,7 +75,7 @@ function createEmbed(author: GuildMember, track: Track): MessageEmbed {
       },
       {
         name: "Duration",
-        value: "♾️ live",
+        value: track.duration,
       },
     ])
     .setThumbnail(
