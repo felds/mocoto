@@ -9,6 +9,8 @@ export interface Track {
   getFormat(): ytdl.videoFormat;
   duration: string;
   durationMs: number;
+  url: string;
+  thumbnail: string;
 }
 
 export class YoutubeTrack implements Track {
@@ -63,6 +65,14 @@ export class YoutubeTrack implements Track {
   /** @todo */
   async supports(query: string) {
     return true;
+  }
+
+  get url() {
+    return this.info.videoDetails.video_url;
+  }
+
+  get thumbnail() {
+    return this.info.videoDetails.thumbnails?.[0].url || "replace me";
   }
 }
 // https://www.youtube.com/watch?v=TVaYeXGcA4E
