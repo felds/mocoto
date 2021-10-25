@@ -66,7 +66,7 @@ export class YoutubeTrack implements Track {
   }
 
   get thumbnail() {
-    return this.info.videoDetails.thumbnails?.[0].url || "replace me";
+    return this.info.videoDetails.thumbnails?.[0].url;
   }
 }
 // https://www.youtube.com/watch?v=TVaYeXGcA4E
