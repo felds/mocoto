@@ -50,15 +50,7 @@ addCommandHandler(command, async (interaction) => {
   }
 
   interaction.replied || interaction.reply({ content: "👌", ephemeral: true });
-
-  // countSecs();
 });
-
-let secs = 0;
-function countSecs() {
-  console.log("secs", secs++);
-  setTimeout(countSecs, 1000);
-}
 
 function createEmbed(author: GuildMember, track: Track): MessageEmbed {
   const embed = new MessageEmbed()
