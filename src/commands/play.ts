@@ -50,28 +50,16 @@ addCommandHandler(command, async (interaction) => {
   }
 
   interaction.replied || interaction.reply({ content: "👌", ephemeral: true });
-
-  countSecs();
 });
 
-let secs = 0;
-function countSecs() {
-  console.log("secs", secs++);
-  setTimeout(countSecs, 1000);
-}
-
-function createEmbed(
-  author: GuildMember,
-  track: Track,
-): MessageEmbed {
- 
+function createEmbed(author: GuildMember, track: Track): MessageEmbed {
   const embed = new MessageEmbed()
     .setColor(0xed9420)
     .setDescription([`${author} added a new track:`, `**${track}**`].join("\n"))
     .setFields([
       {
         name: "Link",
-        value: "https://www.youtube.com/watch?v=5yx6BWlEVcY",
+        value: track.url,
       },
       {
         name: "Duration",
@@ -79,9 +67,10 @@ function createEmbed(
       },
     ])
     .setThumbnail(
-      "https://i.ytimg.com/vi/5yx6BWlEVcY/hq720_live.jpg?sqp=CLTTmIsG-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLB_pVK3jR5yufoubu0lTW2C0Gud4Q",
+      track.thumbnail ||
+        "https://i.ytimg.com/vi/5yx6BWlEVcY/hq720_live.jpg?sqp=CLTTmIsG-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLB_pVK3jR5yufoubu0lTW2C0Gud4Q",
     )
-    .setURL("https://www.youtube.com/watch?v=5yx6BWlEVcY")
+    .setURL(track.url)
     .setFooter("Help me improve: https://github.com/felds/mocoto");
 
   return embed;

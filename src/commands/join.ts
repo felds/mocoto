@@ -1,9 +1,4 @@
-import {
-  ApplicationCommandData,
-  GuildChannel,
-  GuildMember,
-  MessageEmbed,
-} from "discord.js";
+import { ApplicationCommandData, GuildChannel, GuildMember } from "discord.js";
 import {
   addCommandHandler,
   join,
@@ -20,6 +15,7 @@ const command: ApplicationCommandData = {
       name: "channel",
       type: "CHANNEL",
       description: "The voice channel to join.",
+      channelTypes: ["GUILD_VOICE", "GUILD_STAGE_VOICE"],
     },
   ],
 };

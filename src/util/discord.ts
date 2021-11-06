@@ -2,8 +2,8 @@ import { joinVoiceChannel } from "@discordjs/voice";
 import {
   ApplicationCommandData,
   BaseGuildVoiceChannel,
-  CommandInteraction,
   GuildChannel,
+  GuildCommandInteraction,
   GuildMember,
 } from "discord.js";
 import { GUILD_ID } from "../config";
@@ -20,11 +20,12 @@ export function registerCommand(command: ApplicationCommandData): void {
 
 export function addCommandHandler(
   command: ApplicationCommandData,
-  handler: (interaction: CommandInteraction) => Promise<void>,
+  handler: (interaction: GuildCommandInteraction) => Promise<void>,
 ) {
   client.on("interactionCreate", (interaction) => {
     if (!interaction.isCommand()) return;
     if (interaction.commandName !== command.name) return;
+    if (!interaction.inGuild()) return;
 
     /** @todo add error checkgin right here */
     return handler(interaction);
