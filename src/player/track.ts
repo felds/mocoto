@@ -1,12 +1,14 @@
 import { stringify } from "querystring";
 import { Readable } from "stream";
-import ytdl from "ytdl-core";
+import ytdl from "ytdl-core-discord";
+import { videoFormat as VideoFormat, videoInfo as VideoInfo } from "ytdl-core";
 import { msToDuration } from "../util/string";
+
 export interface Track {
   toString(): string;
   getSource(): Promise<string | Readable>;
   supports(query: string): Promise<boolean>;
-  getFormat(): ytdl.videoFormat;
+  getFormat(): VideoFormat;
   duration: string;
   durationMs: number;
   url: string;
@@ -14,9 +16,9 @@ export interface Track {
 }
 
 export class YoutubeTrack implements Track {
-  private format: ytdl.videoFormat;
+  private format: VideoFormat;
 
-  constructor(private info: ytdl.videoInfo) {
+  constructor(private info: VideoInfo) {
     this.format = ytdl.chooseFormat(this.info.formats, {
       quality: "highestaudio",
       filter: "audioonly",
@@ -34,7 +36,7 @@ export class YoutubeTrack implements Track {
   }
 
   async getSource() {
-    return this.format.url;
+    return ytdl.downloadFromInfo(this.info);
   }
 
   getFormat() {
@@ -64,4 +66,3 @@ export class YoutubeTrack implements Track {
     return this.info.videoDetails.thumbnails?.[0].url;
   }
 }
-// https://www.youtube.com/watch?v=TVaYeXGcA4E

@@ -2,13 +2,17 @@ import {
   AudioPlayer,
   AudioPlayerState,
   AudioPlayerStatus,
+  createAudioPlayer,
   createAudioResource,
   getVoiceConnection,
+  NoSubscriberBehavior,
   StreamType,
   VoiceConnection,
 } from "@discordjs/voice";
 import { Collection } from "discord.js";
 import { Track } from "./track";
+
+const MAX_MISSED_FRAMES = 1000;
 
 export class Queue {
   private tracks: Track[] = [];
@@ -25,7 +29,12 @@ export class Queue {
 
   private getAudioPlayer(): AudioPlayer {
     if (!this.audioPlayer) {
-      this.audioPlayer = new AudioPlayer();
+      this.audioPlayer = createAudioPlayer({
+        behaviors: {
+          noSubscriber: NoSubscriberBehavior.Stop,
+          maxMissedFrames: MAX_MISSED_FRAMES,
+        },
+      });
       this.audioPlayer.on("stateChange", this.handleStateChange.bind(this));
       this.getConnection().subscribe(this.audioPlayer);
     }
