@@ -1,5 +1,7 @@
+import { stringify } from "querystring";
 import { Readable } from "stream";
 import ytdl from "ytdl-core";
+import { msToDuration } from "../util/string";
 export interface Track {
   toString(): string;
   getSource(): Promise<string | Readable>;
@@ -15,7 +17,6 @@ export class YoutubeTrack implements Track {
   private format: ytdl.videoFormat;
 
   constructor(private info: ytdl.videoInfo) {
-   
     this.format = ytdl.chooseFormat(this.info.formats, {
       quality: "highestaudio",
       filter: "audioonly",
@@ -40,20 +41,14 @@ export class YoutubeTrack implements Track {
     return this.format;
   }
 
-  get durationMs(){
-    return this.format?.approxDurationMs ? parseInt(this.format.approxDurationMs) : 0
+  get durationMs() {
+    return this.format?.approxDurationMs
+      ? parseInt(this.format.approxDurationMs)
+      : 0;
   }
 
   get duration() {
-    if (!this.durationMs) {
-      return "♾️ live";
-    }
-    const date = new Date(this.durationMs);
-    const HH = `${date.getUTCHours()}`.padStart(2, "0");
-    const MM = `${date.getUTCMinutes()}`.padStart(2, "0");
-    const SS = `${date.getUTCSeconds()}`.padStart(2, "0");
-
-    return `${HH}:${MM}:${SS}`;
+    return msToDuration(this.durationMs);
   }
 
   /** @todo */
