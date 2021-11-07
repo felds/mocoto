@@ -1,5 +1,9 @@
 import { Readable } from "stream";
-import ytdl from "ytdl-core";
+import ytdl, {
+  chooseFormatOptions as ChooseFormatOptions,
+  videoInfo as VideoInfo,
+} from "ytdl-core";
+
 export interface Track {
   toString(): string;
   getSource(): Promise<string | Readable>;
@@ -14,12 +18,15 @@ export interface Track {
 export class YoutubeTrack implements Track {
   private format: ytdl.videoFormat;
 
-  constructor(private info: ytdl.videoInfo) {
-   
-    this.format = ytdl.chooseFormat(this.info.formats, {
-      quality: "highestaudio",
-      filter: "audioonly",
-    });
+  private static formatOptions: ChooseFormatOptions = {
+    quality: "highestaudio",
+  };
+
+  constructor(private info: VideoInfo) {
+    this.format = ytdl.chooseFormat(
+      this.info.formats,
+      YoutubeTrack.formatOptions,
+    );
   }
 
   /** @todo catch errors */
@@ -33,15 +40,17 @@ export class YoutubeTrack implements Track {
   }
 
   async getSource() {
-    return this.format.url;
+    return ytdl(this.url, YoutubeTrack.formatOptions);
   }
 
   getFormat() {
     return this.format;
   }
 
-  get durationMs(){
-    return this.format?.approxDurationMs ? parseInt(this.format.approxDurationMs) : 0
+  get durationMs() {
+    return this.format?.approxDurationMs
+      ? parseInt(this.format.approxDurationMs)
+      : 0;
   }
 
   get duration() {
