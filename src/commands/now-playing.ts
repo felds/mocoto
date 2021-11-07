@@ -14,12 +14,15 @@ registerCommand(command);
 addCommandHandler(command, async (interaction) => {
   const guild = interaction.guild!;
   const queue = getQueue(guild.id);
-  var trackInfo = queue.getTrack();
+  const [track, position] = queue.getTrack();
 
-  var str = "Now Playing:\n";
+  if (!track) {
+    await interaction.reply({ content: "No Track", ephemeral: true });
+    return;
+  }
 
-  str += `${trackInfo[0]} - ${msToDuration(trackInfo[1])} -- ${
-    trackInfo[0].duration
+  const str = `Now Playing:\n${track} - ${msToDuration(position)} -- ${
+    track.duration
   }`;
 
   await interaction.reply({ content: str, ephemeral: true });
