@@ -8,7 +8,7 @@ export interface Track {
   toString(): string;
   getSource(): Promise<string | Readable>;
   supports(query: string): Promise<boolean>;
-  getFormat(): ytdl.videoFormat;
+  getFormat(): VideoFormat;
   duration: string;
   durationMs: number;
   url: string;
@@ -16,7 +16,7 @@ export interface Track {
 }
 
 export class YoutubeTrack implements Track {
-  private format: ytdl.videoFormat;
+  private format: VideoFormat;
 
   private static formatOptions: ChooseFormatOptions = {
     quality: "highestaudio",
@@ -78,4 +78,3 @@ export class YoutubeTrack implements Track {
     return this.info.videoDetails.thumbnails?.[0].url;
   }
 }
-// https://www.youtube.com/watch?v=TVaYeXGcA4E
