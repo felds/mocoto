@@ -76,7 +76,7 @@ export class Queue {
     return this.tracks.slice(Math.max(0, this.pos - 1));
   }
 
-  getTrack(): [Track, number] {
+  getTrack(): [track: Track, position: number] {
     var position = 0;
 
     if (this.audioPlayer?.state.status == AudioPlayerStatus.Playing) {
