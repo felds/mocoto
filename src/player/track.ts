@@ -1,6 +1,9 @@
 import { Readable } from "stream";
-import ytdl from "ytdl-core-discord";
-import { videoFormat as VideoFormat, videoInfo as VideoInfo } from "ytdl-core";
+import ytdl, {
+  chooseFormatOptions as ChooseFormatOptions,
+  videoFormat as VideoFormat,
+  videoInfo as VideoInfo,
+} from "ytdl-core";
 
 export interface Track {
   toString(): string;
@@ -16,11 +19,15 @@ export interface Track {
 export class YoutubeTrack implements Track {
   private format: VideoFormat;
 
+  private static formatOptions: ChooseFormatOptions = {
+    quality: "highestaudio",
+  };
+
   constructor(private info: VideoInfo) {
-    this.format = ytdl.chooseFormat(this.info.formats, {
-      quality: "highestaudio",
-      filter: "audioonly",
-    });
+    this.format = ytdl.chooseFormat(
+      this.info.formats,
+      YoutubeTrack.formatOptions,
+    );
   }
 
   /** @todo catch errors */
@@ -34,7 +41,7 @@ export class YoutubeTrack implements Track {
   }
 
   async getSource() {
-    return ytdl.downloadFromInfo(this.info);
+    return ytdl(this.url, YoutubeTrack.formatOptions);
   }
 
   getFormat() {
