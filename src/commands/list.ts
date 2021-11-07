@@ -15,10 +15,15 @@ addCommandHandler(command, async (interaction) => {
   const queue = getQueue(guild.id);
   var list = queue.getTracks();
 
+  if (!list.length) {
+    await interaction.reply({ content: "No Tracks", ephemeral: true });
+    return;
+  }
+
   var str = "Musics";
   for (let i = 0; i < list.length; i++) {
     str += `\n (${i + 1}) - `;
-    str += list[i];
+    str += `${list[i]} -- (${list[i].duration}) from (User Name TODO )`;
   }
 
   await interaction.reply({ content: str, ephemeral: true });
