@@ -1,7 +1,10 @@
 import { stringify } from "querystring";
 import { Readable } from "stream";
-import ytdl from "ytdl-core-discord";
-import { videoFormat as VideoFormat, videoInfo as VideoInfo } from "ytdl-core";
+import ytdl, {
+  chooseFormatOptions as ChooseFormatOptions,
+  videoFormat as VideoFormat,
+  videoInfo as VideoInfo,
+} from "ytdl-core";
 import { msToDuration } from "../util/string";
 
 export interface Track {
