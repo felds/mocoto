@@ -65,7 +65,16 @@ export class Queue {
 
   getTracks(): Track[] {
     return this.tracks.slice(Math.max(0, this.pos - 1));
-    // return this.tracks.
+  }
+
+  getTrack(): [Track, number] {
+    var position = 0;
+
+    if (this.audioPlayer?.state.status == AudioPlayerStatus.Playing) {
+      position = this.audioPlayer?.state.playbackDuration;
+    }
+
+    return [this.tracks[this.pos], position];
   }
 
   async play() {
@@ -122,7 +131,7 @@ export class Queue {
 
   public isPaused() {
     const { status } = this.getAudioPlayer().state;
-    
+
     return (
       status === AudioPlayerStatus.Paused ||
       status === AudioPlayerStatus.AutoPaused
