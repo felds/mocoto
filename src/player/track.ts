@@ -1,8 +1,8 @@
+import { stringify } from "querystring";
 import { Readable } from "stream";
-import ytdl, {
-  chooseFormatOptions as ChooseFormatOptions,
-  videoInfo as VideoInfo,
-} from "ytdl-core";
+import ytdl from "ytdl-core-discord";
+import { videoFormat as VideoFormat, videoInfo as VideoInfo } from "ytdl-core";
+import { msToDuration } from "../util/string";
 
 export interface Track {
   toString(): string;
@@ -54,15 +54,7 @@ export class YoutubeTrack implements Track {
   }
 
   get duration() {
-    if (!this.durationMs) {
-      return "♾️ live";
-    }
-    const date = new Date(this.durationMs);
-    const HH = `${date.getUTCHours()}`.padStart(2, "0");
-    const MM = `${date.getUTCMinutes()}`.padStart(2, "0");
-    const SS = `${date.getUTCSeconds()}`.padStart(2, "0");
-
-    return `${HH}:${MM}:${SS}`;
+    return msToDuration(this.durationMs);
   }
 
   /** @todo */

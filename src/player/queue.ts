@@ -72,6 +72,20 @@ export class Queue {
     this.tracks.push(track);
   }
 
+  getTracks(): Track[] {
+    return this.tracks.slice(Math.max(0, this.pos - 1));
+  }
+
+  getTrack(): [track: Track, position: number] {
+    var position = 0;
+
+    if (this.audioPlayer?.state.status == AudioPlayerStatus.Playing) {
+      position = this.audioPlayer?.state.playbackDuration;
+    }
+
+    return [this.tracks[this.pos], position];
+  }
+
   async play() {
     const player = this.getAudioPlayer();
 
