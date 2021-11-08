@@ -1,5 +1,8 @@
 import { Track } from "./track";
 
+import YoutubePlaylistLoader from "./query-loader/youtube-playlist";
+import YoutubeVideoLoader from "./query-loader/youtube-video";
+
 export interface QueryLoader {
   /**
    * Get tracks for the query
@@ -9,9 +12,7 @@ export interface QueryLoader {
 }
 
 export async function loadTracks(query: string): Promise<Track[] | null> {
-  const loaderChain = [
-    (await import("./query-loader/youtube-playlist")).default,
-  ] as QueryLoader[];
+  const loaderChain = [YoutubePlaylistLoader, YoutubeVideoLoader];
 
   console.log(loaderChain);
 
