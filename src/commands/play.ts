@@ -1,9 +1,9 @@
 import { getVoiceConnection } from "@discordjs/voice";
 import { ApplicationCommandData, GuildMember, MessageEmbed } from "discord.js";
+import { loadTracks } from "../player/query-loader";
 import { getQueue } from "../player/queue";
-import { Track, YoutubeTrack } from "../player/track";
+import { Track } from "../player/track";
 import { addCommandHandler, join, registerCommand } from "../util/discord";
-import ytdl from "ytdl-core";
 
 const command: ApplicationCommandData = {
   name: "play",
@@ -11,9 +11,9 @@ const command: ApplicationCommandData = {
   type: "CHAT_INPUT",
   options: [
     {
-      name: "url",
+      name: "query",
       type: "STRING",
-      description: "What should I play?",
+      description: "Something to search",
       required: true,
     },
   ],
@@ -32,21 +32,28 @@ addCommandHandler(command, async (interaction) => {
     join(member);
   }
 
-  const url = interaction.options.getString("url");
-  if (url) {
+  const query = interaction.options.getString("query");
+  if (query) {
     await interaction.deferReply({ ephemeral: true });
 
-    const track = await YoutubeTrack.fromUrl(url);
-    queue.addTrack(track);
+    const tracks = await loadTracks(query);
+    if (tracks) {
+      const embeds = tracks.map((track) => {
+        queue.addTrack(track);
+        return createEmbed(member, track);
+      });
+
+      await interaction.editReply({
+        embeds,
+      });
+    } else {
+      // @TODO better message/embed
+      interaction.editReply("Track not found");
+    }
 
     if (queue.isIdle()) {
       queue.play();
     }
-
-    const embed = createEmbed(member, track);
-    await interaction.editReply({
-      embeds: [embed],
-    });
   }
 
   interaction.replied || interaction.reply({ content: "👌", ephemeral: true });
