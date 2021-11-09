@@ -4,6 +4,7 @@ import { loadTracks } from "../player/query-loader";
 import { getQueue } from "../player/queue";
 import { Track } from "../player/track";
 import { addCommandHandler, join, registerCommand } from "../util/discord";
+import { createBaseEmbed } from "../util/message";
 
 const command: ApplicationCommandData = {
   name: "play",
@@ -60,8 +61,7 @@ addCommandHandler(command, async (interaction) => {
 });
 
 function createEmbed(author: GuildMember, track: Track): MessageEmbed {
-  const embed = new MessageEmbed()
-    .setColor(0xed9420)
+  const embed = createBaseEmbed()
     .setDescription([`${author} added a new track:`, `**${track}**`].join("\n"))
     .setFields([
       {
@@ -73,12 +73,11 @@ function createEmbed(author: GuildMember, track: Track): MessageEmbed {
         value: track.duration,
       },
     ])
-    .setThumbnail(
-      track.thumbnail ||
-        "https://i.ytimg.com/vi/5yx6BWlEVcY/hq720_live.jpg?sqp=CLTTmIsG-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLB_pVK3jR5yufoubu0lTW2C0Gud4Q",
-    )
-    .setURL(track.url)
-    .setFooter("Help me improve: https://github.com/felds/mocoto");
+    .setURL(track.url);
+
+  if (track.thumbnail) {
+    embed.setThumbnail(track.thumbnail);
+  }
 
   return embed;
 }
