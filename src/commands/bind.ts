@@ -1,6 +1,7 @@
 import { ApplicationCommandData, TextChannel } from "discord.js";
 import { getBot } from "../bot";
 import { addCommandHandler, registerCommand } from "../util/discord";
+import { createBaseEmbed } from "../util/message";
 
 const command: ApplicationCommandData = {
   type: "CHAT_INPUT",
@@ -23,10 +24,15 @@ addCommandHandler(command, async (interaction) => {
   const guildId = interaction.guildId;
   const channel = interaction.options.getChannel("channel") as TextChannel;
 
-  // console.log(guildId, channel);
-
   const bot = getBot(guildId);
   bot.textChannel = channel;
 
-  interaction.reply("ok");
+  const embed = createBaseEmbed().setDescription(
+    `From now on, I'll only speak on **${channel}**.`,
+  );
+
+  interaction.reply({
+    ephemeral: true,
+    embeds: [embed],
+  });
 });
