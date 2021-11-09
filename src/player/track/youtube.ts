@@ -3,7 +3,6 @@ import ytdl, {
   videoFormat as VideoFormat,
   videoInfo as VideoInfo,
 } from "ytdl-core";
-import { msToDuration } from "../../util/string";
 import type { Track } from "../track";
 
 export class YoutubeTrack implements Track {
@@ -34,14 +33,10 @@ export class YoutubeTrack implements Track {
     return ytdl(this.url, YoutubeTrack.formatOptions);
   }
 
-  get durationMs() {
-    return this.format?.approxDurationMs
-      ? parseInt(this.format.approxDurationMs)
-      : 0;
-  }
-
   get duration() {
-    return msToDuration(this.durationMs);
+    return !this.format.isLive && this.format.approxDurationMs
+      ? parseInt(this.format.approxDurationMs)
+      : null;
   }
 
   /** @todo */

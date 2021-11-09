@@ -1,9 +1,8 @@
 import { Readable } from "stream";
-import { videoFormat as VideoFormat } from "ytdl-core";
 
 export interface Track {
   /**
-   * The string representation for the track
+   * The string representation for the track.
    */
   toString(): string;
 
@@ -13,22 +12,17 @@ export interface Track {
   getSource(): Promise<string | Readable>;
 
   /**
-   *
+   * The duration of the track in milliseconds. `null` if live.
    */
-  duration: string;
+  readonly duration: number | null;
 
   /**
-   * @todo redundant?
+   * The web link (if any).
    */
-  durationMs: number;
+  readonly url?: string;
 
   /**
-   * The web link (if any)
+   * The track thumbnail.
    */
-  url?: string;
-
-  /**
-   * The track thumbnail
-   */
-  thumbnail?: string;
+  readonly thumbnail?: string;
 }
