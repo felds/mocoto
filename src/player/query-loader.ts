@@ -14,8 +14,6 @@ export interface QueryLoader {
 export async function loadTracks(query: string): Promise<Track[] | null> {
   const loaderChain = [YoutubePlaylistLoader, YoutubeVideoLoader];
 
-  console.log(loaderChain);
-
   for (const loader of loaderChain) {
     const tracks = await loader.getTracks(query);
     if (tracks !== null) return tracks;
