@@ -5,6 +5,7 @@ import { getQueue } from "../player/queue";
 import { Track } from "../player/track";
 import { addCommandHandler, join, registerCommand } from "../util/discord";
 import { createBaseEmbed } from "../util/message";
+import { msToDuration } from "../util/string";
 
 const command: ApplicationCommandData = {
   name: "play",
@@ -57,7 +58,7 @@ addCommandHandler(command, async (interaction) => {
     }
   }
 
-  interaction.replied || interaction.reply({ content: "👌", ephemeral: true });
+  // interaction.replied || interaction.reply({ content: "👌", ephemeral: true });
 });
 
 function createEmbed(author: GuildMember, track: Track): MessageEmbed {
@@ -70,7 +71,7 @@ function createEmbed(author: GuildMember, track: Track): MessageEmbed {
     embed.setURL(track.url);
   }
 
-  embed.addField("Duration", track.duration);
+  embed.addField("Duration", msToDuration(track.duration));
 
   if (track.thumbnail) {
     embed.setThumbnail(track.thumbnail);
