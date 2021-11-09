@@ -1,3 +1,4 @@
+import { GuildMember } from "discord.js";
 import ytdl, {
   chooseFormatOptions as ChooseFormatOptions,
   videoFormat as VideoFormat,
@@ -8,21 +9,18 @@ import type { Track } from "../track";
 export class YoutubeTrack implements Track {
   private format: VideoFormat;
 
+  readonly userRef: WeakRef<GuildMember>;
+
   private static formatOptions: ChooseFormatOptions = {
     quality: "highestaudio",
   };
 
-  constructor(private info: VideoInfo) {
+  constructor(user: GuildMember, private info: VideoInfo) {
     this.format = ytdl.chooseFormat(
       this.info.formats,
       YoutubeTrack.formatOptions,
     );
-  }
-
-  /** @todo catch errors */
-  static async fromUrl(url: string) {
-    const info = await ytdl.getInfo(url);
-    return new YoutubeTrack(info);
+    this.userRef = new WeakRef(user);
   }
 
   toString() {
@@ -37,11 +35,6 @@ export class YoutubeTrack implements Track {
     return !this.format.isLive && this.format.approxDurationMs
       ? parseInt(this.format.approxDurationMs)
       : null;
-  }
-
-  /** @todo */
-  async supports(query: string) {
-    return true;
   }
 
   get url() {

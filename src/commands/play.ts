@@ -38,7 +38,7 @@ addCommandHandler(command, async (interaction) => {
   if (query) {
     await interaction.deferReply({ ephemeral: true });
 
-    const tracks = await loadTracks(query);
+    const tracks = await loadTracks(member, query);
     if (tracks) {
       const embeds = tracks.map((track) => {
         queue.addTrack(track);
