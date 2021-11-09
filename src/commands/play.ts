@@ -61,19 +61,16 @@ addCommandHandler(command, async (interaction) => {
 });
 
 function createEmbed(author: GuildMember, track: Track): MessageEmbed {
-  const embed = createBaseEmbed()
-    .setDescription([`${author} added a new track:`, `**${track}**`].join("\n"))
-    .setFields([
-      {
-        name: "Link",
-        value: track.url,
-      },
-      {
-        name: "Duration",
-        value: track.duration,
-      },
-    ])
-    .setURL(track.url);
+  const embed = createBaseEmbed().setDescription(
+    `${author} added a new track:\n**${track}**`,
+  );
+
+  if (track.url) {
+    embed.addField("Url", track.url);
+    embed.setURL(track.url);
+  }
+
+  embed.addField("Duration", track.duration);
 
   if (track.thumbnail) {
     embed.setThumbnail(track.thumbnail);
