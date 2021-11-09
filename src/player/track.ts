@@ -13,11 +13,6 @@ export interface Track {
   getSource(): Promise<string | Readable>;
 
   /**
-   * @todo Is this used anywhere?
-   */
-  getFormat(): VideoFormat;
-
-  /**
    *
    */
   duration: string;

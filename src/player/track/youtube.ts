@@ -34,10 +34,6 @@ export class YoutubeTrack implements Track {
     return ytdl(this.url, YoutubeTrack.formatOptions);
   }
 
-  getFormat() {
-    return this.format;
-  }
-
   get durationMs() {
     return this.format?.approxDurationMs
       ? parseInt(this.format.approxDurationMs)
