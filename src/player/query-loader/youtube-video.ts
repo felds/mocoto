@@ -1,6 +1,6 @@
 import ytdl from "ytdl-core";
 import type { QueryLoader } from "../query-loader";
-import { YoutubeTrack } from "../track";
+import { YoutubeTrack } from "../track/youtube";
 
 async function getTracks(query: string) {
   try {
