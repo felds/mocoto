@@ -1,3 +1,4 @@
+import { GuildMember } from "discord.js";
 import { Readable } from "stream";
 
 export interface Track {
@@ -25,4 +26,9 @@ export interface Track {
    * The track thumbnail.
    */
   readonly thumbnail?: string;
+
+  /**
+   * The user who added the track.
+   */
+  readonly userRef: WeakRef<GuildMember> | null;
 }

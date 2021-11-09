@@ -38,11 +38,11 @@ addCommandHandler(command, async (interaction) => {
   if (query) {
     await interaction.deferReply({ ephemeral: true });
 
-    const tracks = await loadTracks(query);
+    const tracks = await loadTracks(member, query);
     if (tracks) {
       const embeds = tracks.map((track) => {
         queue.addTrack(track);
-        return createEmbed(member, track);
+        return createEmbed(track);
       });
 
       await interaction.editReply({
@@ -61,10 +61,15 @@ addCommandHandler(command, async (interaction) => {
   // interaction.replied || interaction.reply({ content: "👌", ephemeral: true });
 });
 
-function createEmbed(author: GuildMember, track: Track): MessageEmbed {
-  const embed = createBaseEmbed().setDescription(
-    `${author} added a new track:\n**${track}**`,
-  );
+function createEmbed(track: Track): MessageEmbed {
+  const embed = createBaseEmbed();
+
+  const author = track.userRef?.deref();
+  if (author) {
+    embed.setDescription(`${author} added a new track:\n**${track}**`);
+  } else {
+    embed.setDescription(`**${track}**`);
+  }
 
   if (track.url) {
     embed.addField("Url", track.url);
