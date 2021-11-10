@@ -72,8 +72,8 @@ export class Queue {
     this.tracks.push(track);
   }
 
-  getTracks(): Track[] {
-    return this.tracks.slice(Math.max(0, this.pos - 1));
+  getTracks(): [tracks: Track[], current: number] {
+    return [this.tracks.slice(Math.max(0, this.pos - 1)), this.pos];
   }
 
   getTrack(): [track: Track, position: number] {
