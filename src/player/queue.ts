@@ -11,20 +11,15 @@ import {
 } from "@discordjs/voice";
 import { Collection } from "discord.js";
 import { Track } from "./track";
-import { TypedEmitter } from "tiny-typed-emitter";
 
 const MAX_MISSED_FRAMES = 1000;
 
-export interface QueueEvents {}
-
-export class Queue extends TypedEmitter<QueueEvents> {
+export class Queue {
   private tracks: Track[] = [];
   private audioPlayer: AudioPlayer | null = null;
   private pos: number = 0;
 
-  constructor(private guildId: string) {
-    super();
-  }
+  constructor(private guildId: string) {}
 
   private getConnection(): VoiceConnection {
     const connection = getVoiceConnection(this.guildId);
