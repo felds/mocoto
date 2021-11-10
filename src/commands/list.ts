@@ -27,9 +27,8 @@ addCommandHandler(command, async (interaction) => {
     const duration = msToDuration(track.duration);
 
     const sign = Math.sign(i - current);
-    const index = `(**${sign < 0 ? "-" : ""}${String(
-      Math.abs(i - current),
-    ).padStart(2, "0")}**)`;
+    const index =
+      sign < 0 ? "-" : "" + String(Math.abs(i - current)).padStart(2, "0");
 
     const user = track.userRef?.deref();
     let usertext = "";
@@ -38,7 +37,8 @@ addCommandHandler(command, async (interaction) => {
       String(track).length > 30
         ? String(track).substring(0, 30) + "..."
         : track;
-    return `${index} \`${trackTitle} -- (${duration})\`${usertext}`;
+
+    return `**${index}** \`${trackTitle} -- (${duration})\`${usertext}`;
   });
 
   const embed = createBaseEmbed();
