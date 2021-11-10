@@ -27,6 +27,10 @@ export class YoutubeTrack implements Track {
     return this.info.videoDetails.title;
   }
 
+  get title() {
+    return this.info.videoDetails.title;
+  }
+
   async getSource() {
     return ytdl(this.url, YoutubeTrack.formatOptions);
   }
