@@ -14,6 +14,9 @@ import { Track } from "./track";
 
 const MAX_MISSED_FRAMES = 1000;
 
+/**
+ * @TODO make queue emit events
+ */
 export class Queue {
   private tracks: Track[] = [];
   private audioPlayer: AudioPlayer | null = null;
