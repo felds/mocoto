@@ -1,9 +1,11 @@
-import { MessageEmbed } from "discord.js";
+import { Message, MessageEmbed } from "discord.js";
 import { getBot } from "../../bot";
 import { createBaseEmbed } from "../../util/message";
 import { msToDuration } from "../../util/string";
 import { QueuePlugin } from "../queue-plugin";
 import { Track } from "../track";
+
+const announcements = new Map<string, Message>();
 
 const onPlay: QueuePlugin["onPlay"] = async (params) => {
   const bot = getBot(params.guildId);
@@ -11,6 +13,11 @@ const onPlay: QueuePlugin["onPlay"] = async (params) => {
   if (!channel) return;
 
   const embed = createEmbed(params.track);
+
+  const currMessage = announcements.get(params.guildId);
+  if (currMessage) {
+    currMessage.edit({ components: [] });
+  }
 
   const message = await channel.send({
     embeds: [embed],
@@ -35,7 +42,7 @@ const onPlay: QueuePlugin["onPlay"] = async (params) => {
     ],
   });
 
-  console.log("Message sent", message.id);
+  announcements.set(params.guildId, message);
 };
 
 const Announcer: QueuePlugin = {
