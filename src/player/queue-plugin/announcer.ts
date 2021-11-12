@@ -1,7 +1,9 @@
 import { Message, MessageEmbed } from "discord.js";
 import { getBot } from "../../bot";
+import { client } from "../../discord";
 import { createBaseEmbed } from "../../util/message";
 import { msToDuration } from "../../util/string";
+import { getQueue } from "../queue";
 import { QueuePlugin } from "../queue-plugin";
 import { Track } from "../track";
 
@@ -29,14 +31,14 @@ const onPlay: QueuePlugin["onPlay"] = async (params) => {
       {
         type: "ACTION_ROW",
         components: [
+          // {
+          //   customId: "StartOver",
+          //   type: "BUTTON",
+          //   style: "PRIMARY",
+          //   label: "Start over",
+          // },
           {
-            customId: "StartOver",
-            type: "BUTTON",
-            style: "PRIMARY",
-            label: "Start over",
-          },
-          {
-            customId: "Skip",
+            customId: "announcer__skip",
             type: "BUTTON",
             style: "PRIMARY",
             label: "Skip",
@@ -77,3 +79,18 @@ function createEmbed(track: Track): MessageEmbed {
 
   return embed;
 }
+
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.inGuild()) return;
+  if (!interaction.isButton()) return;
+
+  switch (interaction.customId) {
+    case "announcer__skip": {
+      const queue = getQueue(interaction.guildId);
+      queue.next();
+      return;
+    }
+  }
+
+  console.log("buttonInteraction", interaction.customId);
+});

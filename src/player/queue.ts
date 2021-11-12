@@ -73,6 +73,7 @@ export class Queue {
 
     this.plugins.forEach((plugin) =>
       plugin.onPlay?.({
+        queue: this,
         track: currTrack,
         guildId: this.guildId,
       }),
