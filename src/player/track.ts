@@ -10,7 +10,7 @@ export interface Track {
   /**
    * A playable source.
    */
-  getSource(): Promise<string | Readable>;
+  getSource(seek?: number): Promise<string | Readable>;
 
   /**
    * The duration of the track in milliseconds. `null` if live.

@@ -15,9 +15,11 @@ import { Track } from "./track";
 const MAX_MISSED_FRAMES = 1000;
 
 export class Queue {
+
   private tracks: Track[] = [];
   private audioPlayer: AudioPlayer | null = null;
   private pos: number = 0;
+  private seek: number = 0;
 
   constructor(private guildId: string) {}
 
@@ -98,6 +100,11 @@ export class Queue {
         player.unpause();
         return;
     }
+  }
+  
+  async seekTo(time: number) {
+    this.seek = time;
+    this.playForRealsies()
   }
 
   async pause() {
