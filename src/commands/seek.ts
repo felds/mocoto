@@ -30,7 +30,7 @@ addCommandHandler(command, async (interaction) => {
     join(member);
   }
   const [track, _] = queue.getTrack();
- 
+
   if (!track) {
     await interaction.reply({ content: "No Track", ephemeral: true });
     return;
@@ -38,13 +38,17 @@ addCommandHandler(command, async (interaction) => {
 
   const timeStr = interaction.options.getString("time");
 
-  if (!timeStr || parseFloat(timeStr) == NaN) return
+  if (!timeStr || parseFloat(timeStr) == NaN) {
+    interaction.replied || interaction.reply({ content: `invalid format`, ephemeral: true });
+    return
+  }
 
   const time = parseFloat(timeStr)
 
   await queue.seekTo(time);
 
-  const seekTo = msToDuration(time * 1000);
+  const seekTo = time ? msToDuration(time * 1000) : '00:00:00';
+
   const duration = msToDuration(track.duration);
 
   interaction.replied || interaction.reply({ content: `✅ seeked to, ${seekTo} of ${duration}`, ephemeral: true });
