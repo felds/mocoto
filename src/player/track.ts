@@ -13,6 +13,11 @@ export interface Track {
   getSource(seek?: number): Promise<string | Readable>;
 
   /**
+   * The title of the track.
+   */
+  readonly title: string;
+
+  /**
    * The duration of the track in milliseconds. `null` if live.
    */
   readonly duration: number | null;
