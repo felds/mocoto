@@ -65,9 +65,9 @@ export class Queue {
       return;
     }
 
-    const source = await currTrack.getSource();
+    const source = await currTrack.getSource(this.seek);
     const resource = createAudioResource(source, {
-      inputType: StreamType.Arbitrary,
+      inputType: StreamType.Opus,
       inlineVolume: true,
     });
 
@@ -113,10 +113,10 @@ export class Queue {
         return;
     }
   }
-  
+
   async seekTo(time: number) {
     this.seek = time;
-    this.playForRealsies()
+    await this.playForRealsies()
   }
 
   async pause() {
