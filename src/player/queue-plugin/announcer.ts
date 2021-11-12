@@ -16,7 +16,11 @@ const onPlay: QueuePlugin["onPlay"] = async (params) => {
 
   const currMessage = announcements.get(params.guildId);
   if (currMessage) {
-    currMessage.edit({ components: [] });
+    // delete previous message
+    await currMessage.delete().catch(() => {});
+
+    // // remove buttons
+    // await currMessage.edit({ components: [] }).catch(() => {});
   }
 
   const message = await channel.send({
