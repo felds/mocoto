@@ -9,6 +9,10 @@ import { Track } from "../track";
 
 const announcements = new Map<string, Message>();
 
+enum Button {
+  Skip = "announcer__skip",
+}
+
 const onPlay: QueuePlugin["onPlay"] = async (params) => {
   const bot = getBot(params.guildId);
   const channel = bot.textChannel;
@@ -38,7 +42,7 @@ const onPlay: QueuePlugin["onPlay"] = async (params) => {
           //   label: "Start over",
           // },
           {
-            customId: "announcer__skip",
+            customId: Button.Skip,
             type: "BUTTON",
             style: "PRIMARY",
             label: "Skip",
@@ -85,7 +89,7 @@ client.on("interactionCreate", async (interaction) => {
   if (!interaction.isButton()) return;
 
   switch (interaction.customId) {
-    case "announcer__skip": {
+    case Button.Skip: {
       const queue = getQueue(interaction.guildId);
       queue.next();
       return;
