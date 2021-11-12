@@ -1,6 +1,6 @@
 import { getBot } from "../../bot";
 import { createBaseEmbed } from "../../util/message";
-import { QueuePlugin } from "../query-plugin";
+import { QueuePlugin } from "../queue-plugin";
 
 const onPlay: QueuePlugin["onPlay"] = async (params) => {
   const bot = getBot(params.guildId);

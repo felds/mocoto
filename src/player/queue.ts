@@ -10,8 +10,8 @@ import {
   VoiceConnection,
 } from "@discordjs/voice";
 import { Collection } from "discord.js";
-import { QueuePlugin } from "./query-plugin";
-import Announcer from "./query-plugin/announcer";
+import { QueuePlugin } from "./queue-plugin";
+import Announcer from "./queue-plugin/announcer";
 import { Track } from "./track";
 
 const MAX_MISSED_FRAMES = 1000;
