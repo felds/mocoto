@@ -10,13 +10,11 @@ import {
   VoiceConnection,
 } from "@discordjs/voice";
 import { Collection } from "discord.js";
+import { QueuePlugin } from "./query-plugin";
+import Announcer from "./query-plugin/announcer";
 import { Track } from "./track";
 
 const MAX_MISSED_FRAMES = 1000;
-
-interface QueuePlugin {
-  onPlay?: (params: { track: Track; guildId: string }) => void;
-}
 
 export class Queue {
   private tracks: Track[] = [];
@@ -171,11 +169,7 @@ export function getQueue(guildId: string): Queue {
   if (existingQueue) return existingQueue;
 
   const newQueue = new Queue(guildId);
-  newQueue.addPlugin({
-    onPlay: (params) => {
-      console.log(`Playing ${params.track.title} on guild ${guildId}`);
-    },
-  });
+  newQueue.addPlugin(Announcer);
 
   queues.set(guildId, newQueue);
   return newQueue;
