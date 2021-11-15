@@ -21,6 +21,6 @@ jobs:
         uses: creyD/prettier_action@v4.0
         with:
           # This part is also where you can pass other options, for example:
+          commit_message: prettify the code \#tools-not-rules
           prettier_options: --write *.ts src/**/*.ts
           only_changed: True
-          same_commit: True
