@@ -15,10 +15,9 @@ async function main() {
   await importDir(join(__dirname, "src/commands"));
 
   // once everything is loaded, log in
-  client
-  .login(TOKEN);
+  client.login(TOKEN);
 
-  client.on("ready", _ => console.log("Ready!!"))
+  client.on("ready", (_) => console.log("Ready!!"));
 }
 main().catch((err) => console.error("Panic while setting up.", err));
 
