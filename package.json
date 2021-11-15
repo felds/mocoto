@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "nodemon index.ts",
     "build": "rm -fr dist && tsc",
-    "start": "ts-node index.ts"
+    "start": "ts-node index.ts",
+    "prepare": "husky install",
+    "format": "npx prettier -w \"*.ts\" \"src/**/*.ts\""
   },
   "keywords": [
     "discord",
@@ -18,7 +20,9 @@
   "devDependencies": {
     "@types/lodash": "^4.14.176",
     "@types/node": "^16.10.4",
-    "nodemon": "^2.0.13"
+    "husky": "^7.0.4",
+    "nodemon": "^2.0.13",
+    "prettier": "^2.4.1"
   },
   "dependencies": {
     "@discordjs/opus": "^0.5.3",
