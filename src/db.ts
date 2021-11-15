@@ -1,5 +1,5 @@
-import { initializeApp, applicationDefault, cert } from "firebase-admin/app";
-import { getFirestore, Timestamp, FieldValue } from "firebase-admin/firestore";
+import { cert, initializeApp } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
 import { FIREBASE_CREDENTIALS_PATH } from "./config";
 
 const serviceAccount = require(FIREBASE_CREDENTIALS_PATH);
@@ -8,6 +8,7 @@ const db = getFirestore();
 
 export type BotConfig = {
   textChannelId?: string;
+  arb: any;
 };
 
 export async function getConfig<T extends keyof BotConfig>(
@@ -15,8 +16,17 @@ export async function getConfig<T extends keyof BotConfig>(
   key: T,
   fallback?: BotConfig[T],
 ): Promise<BotConfig[T]> {
-  const doc = await db.collection("guilds").doc(guildId).get();
-  const data = doc.data();
+  const doc = db.collection("guilds").doc(guildId);
+  const data = (await doc.get()).data();
   const value = data?.[key];
   return value ?? fallback;
+}
+
+export async function setConfig<T extends keyof BotConfig>(
+  guildId: string,
+  key: T,
+  value: BotConfig[T],
+): Promise<void> {
+  const doc = db.collection("guilds").doc(guildId);
+  await doc.set({ [key]: value }, { merge: true });
 }
