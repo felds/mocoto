@@ -7,3 +7,5 @@ export const client = new Client({
     Intents.FLAGS.GUILDS,
   ],
 });
+
+client.setMaxListeners(0);
