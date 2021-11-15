@@ -8,7 +8,6 @@ const db = getFirestore();
 
 export type BotConfig = {
   textChannelId?: string;
-  arb: any;
 };
 
 export async function getConfig<T extends keyof BotConfig>(
