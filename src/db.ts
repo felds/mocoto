@@ -1,5 +1,5 @@
 import { cert, initializeApp } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+import { FieldValue, getFirestore } from "firebase-admin/firestore";
 import { FIREBASE_CREDENTIALS_PATH } from "./config";
 
 const serviceAccount = require(FIREBASE_CREDENTIALS_PATH);
@@ -29,4 +29,12 @@ export async function setConfig<T extends keyof BotConfig>(
 ): Promise<void> {
   const doc = db.collection("guilds").doc(guildId);
   await doc.set({ [key]: value }, { merge: true });
+}
+
+export async function unsetConfig<T extends keyof BotConfig>(
+  guildId: string,
+  key: T,
+): Promise<void> {
+  const doc = db.collection("guilds").doc(guildId);
+  await doc.set({ [key]: FieldValue.delete() }, { merge: true });
 }
