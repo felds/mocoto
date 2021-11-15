@@ -17,7 +17,6 @@ import { Track } from "./track";
 const MAX_MISSED_FRAMES = 1000;
 
 export class Queue {
-
   private tracks: Track[] = [];
   private audioPlayer: AudioPlayer | null = null;
   private pos: number = 0;
@@ -116,7 +115,7 @@ export class Queue {
 
   async seekTo(time: number) {
     this.seek = time;
-    await this.playForRealsies()
+    await this.playForRealsies();
   }
 
   async pause() {

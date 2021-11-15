@@ -33,7 +33,11 @@ export class YoutubeTrack implements Track {
   }
 
   async getSource(seek = 0) {
-    return ytdl(this.url, {seek, opusEncoded: true ,...YoutubeTrack.formatOptions});
+    return ytdl(this.url, {
+      ...YoutubeTrack.formatOptions,
+      seek,
+      opusEncoded: true,
+    });
   }
 
   get duration() {
