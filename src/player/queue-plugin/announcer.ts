@@ -1,5 +1,5 @@
 import { Message, MessageEmbed } from "discord.js";
-import { getConfig, unsetConfig } from "../../db";
+import { getPref, unsetPref } from "../../prefs";
 import { client } from "../../discord";
 import { createBaseEmbed } from "../../util/message";
 import { msToDuration } from "../../util/string";
@@ -16,13 +16,13 @@ enum Button {
 const onPlay: QueuePlugin["onPlay"] = async (params) => {
   const { guildId } = params;
 
-  const textChannelId = await getConfig(guildId, "textChannelId");
+  const textChannelId = await getPref(guildId, "textChannelId");
   if (!textChannelId) return;
 
   const channel = client.channels.cache.get(textChannelId);
   if (!channel || !channel.isText()) {
     // channel not resolvable (probably gone)
-    await unsetConfig(guildId, "textChannelId");
+    await unsetPref(guildId, "textChannelId");
     return;
   }
 

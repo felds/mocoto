@@ -10,7 +10,7 @@ export type BotConfig = {
   textChannelId?: string;
 };
 
-export async function getConfig<T extends keyof BotConfig>(
+export async function getPref<T extends keyof BotConfig>(
   guildId: string,
   key: T,
   fallback?: BotConfig[T],
@@ -21,7 +21,7 @@ export async function getConfig<T extends keyof BotConfig>(
   return value ?? fallback;
 }
 
-export async function setConfig<T extends keyof BotConfig>(
+export async function setPref<T extends keyof BotConfig>(
   guildId: string,
   key: T,
   value: BotConfig[T],
@@ -30,7 +30,7 @@ export async function setConfig<T extends keyof BotConfig>(
   await doc.set({ [key]: value }, { merge: true });
 }
 
-export async function unsetConfig<T extends keyof BotConfig>(
+export async function unsetPref<T extends keyof BotConfig>(
   guildId: string,
   key: T,
 ): Promise<void> {
