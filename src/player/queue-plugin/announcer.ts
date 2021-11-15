@@ -31,7 +31,9 @@ const onPlay: QueuePlugin["onPlay"] = async (params) => {
   const currMessage = announcements.get(params.guildId);
   if (currMessage) {
     // delete previous message
-    await currMessage.delete().catch(() => {});
+    await currMessage.delete().catch(() => {
+      /* no-op */
+    });
 
     // // remove buttons
     // await currMessage.edit({ components: [] }).catch(() => {});

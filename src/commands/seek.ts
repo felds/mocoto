@@ -29,22 +29,21 @@ addCommandHandler(command, async (interaction) => {
   if (!connection) {
     join(member);
   }
-  const [track, _] = queue.getTrack();
+  const [track] = queue.getTrack();
 
   if (!track) {
     await interaction.reply({ content: "No Track", ephemeral: true });
     return;
   }
 
-  const timeStr = interaction.options.getString("time");
+  const timeStr = interaction.options.getString("time")!;
+  const time = parseInt(timeStr);
 
-  if (!timeStr || parseFloat(timeStr) == NaN) {
+  if (isNaN(time)) {
     interaction.replied ||
       interaction.reply({ content: `invalid format`, ephemeral: true });
     return;
   }
-
-  const time = parseFloat(timeStr);
 
   await queue.seekTo(time);
 

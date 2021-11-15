@@ -19,8 +19,8 @@ const MAX_MISSED_FRAMES = 1000;
 export class Queue {
   private tracks: Track[] = [];
   private audioPlayer: AudioPlayer | null = null;
-  private pos: number = 0;
-  private seek: number = 0;
+  private pos = 0;
+  private seek = 0;
   private plugins: QueuePlugin[] = [];
 
   constructor(private guildId: string) {}
@@ -90,7 +90,7 @@ export class Queue {
   }
 
   getTrack(): [track: Track, position: number] {
-    var position = 0;
+    let position = 0;
 
     if (this.audioPlayer?.state.status == AudioPlayerStatus.Playing) {
       position = this.audioPlayer?.state.playbackDuration;

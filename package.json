@@ -7,7 +7,6 @@
     "dev": "nodemon index.ts",
     "build": "rm -fr dist && tsc",
     "start": "ts-node index.ts",
-    "prepare": "husky install",
     "pre-commit": "npm run format",
     "format": "npx prettier -w \"*.ts\" \"src/**/*.ts\"",
     "lint": "eslint --ignore-path .gitignore ."
@@ -25,7 +24,6 @@
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "eslint": "^8.2.0",
-    "husky": "^7.0.4",
     "nodemon": "^2.0.13",
     "prettier": "^2.4.1"
   },
