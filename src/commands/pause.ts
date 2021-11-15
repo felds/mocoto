@@ -21,8 +21,8 @@ addCommandHandler(command, async (interaction) => {
     join(member);
   }
 
-  if(queue.isPlaying()){
-      queue.pause()
+  if (queue.isPlaying()) {
+    queue.pause();
   }
   interaction.replied || interaction.reply({ content: "👌", ephemeral: true });
 });
