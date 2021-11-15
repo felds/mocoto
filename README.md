@@ -4,7 +4,7 @@
 
 We use Firebase to persist preferences between runs. Witout it you wont be able to use any features that rely on `get/set/unsetPref` functions (like the [announcer](./src/player/queue-plugin/announcer.ts))
 
-#### Creating the credential
+#### Creating the credentials
 
 Skip this step if you already have the credential file in hand
 
