@@ -1,4 +1,7 @@
-import { joinVoiceChannel } from "@discordjs/voice";
+import {
+  DiscordGatewayAdapterCreator,
+  joinVoiceChannel,
+} from "@discordjs/voice";
 import {
   ApplicationCommandData,
   BaseGuildVoiceChannel,
@@ -58,11 +61,13 @@ export function join(
     throw new JoinError(`I can't join channel ${channel.name}.`);
   }
 
+  const adapterCreator = channel.guild
+    .voiceAdapterCreator as DiscordGatewayAdapterCreator;
+
   return joinVoiceChannel({
     channelId: channel.id,
     guildId: channel.guildId,
-    // @ts-ignore
-    adapterCreator: channel.guild.voiceAdapterCreator,
+    adapterCreator,
   });
 }
 export class JoinError extends Error {}
