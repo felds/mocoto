@@ -17,7 +17,16 @@ export function registerCommand(command: ApplicationCommandData): void {
     console.log(`Registering command /${command.name}`);
 
     const acm = client.application?.commands;
-    if (acm) acm.create(command, GUILD_ID);
+    if (acm) {
+      if (GUILD_ID) {
+        // create commands for the guild only
+        acm.create(command, GUILD_ID);
+      } else {
+        // create commands for all guilds
+        // it may take up to 2 hours to take effect
+        acm.create(command);
+      }
+    }
   });
 }
 
