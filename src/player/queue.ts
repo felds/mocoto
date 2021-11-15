@@ -20,6 +20,7 @@ export class Queue {
   private tracks: Track[] = [];
   private audioPlayer: AudioPlayer | null = null;
   private pos: number = 0;
+  private seek: number = 0;
   private plugins: QueuePlugin[] = [];
 
   constructor(private guildId: string) {}
@@ -63,9 +64,9 @@ export class Queue {
       return;
     }
 
-    const source = await currTrack.getSource();
+    const source = await currTrack.getSource(this.seek);
     const resource = createAudioResource(source, {
-      inputType: StreamType.Arbitrary,
+      inputType: StreamType.Opus,
       inlineVolume: true,
     });
 
@@ -110,6 +111,11 @@ export class Queue {
         player.unpause();
         return;
     }
+  }
+
+  async seekTo(time: number) {
+    this.seek = time;
+    await this.playForRealsies();
   }
 
   async pause() {
