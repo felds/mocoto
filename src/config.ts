@@ -3,8 +3,10 @@ import dotenv from "dotenv";
 import fs from "fs";
 dotenv.config();
 
-export const TOKEN = process.env.TOKEN!;
-export const GUILD_ID = process.env.GUILD_ID!;
+assert(process.env.TOKEN, "Please provide a token for the bot.");
+export const TOKEN = process.env.TOKEN;
+
+export const GUILD_ID = process.env.GUILD_ID;
 
 process.env.FIREBASE_CREDENTIALS_PATH;
 assert(
