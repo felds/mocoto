@@ -1,9 +1,7 @@
-import { cert, initializeApp } from "firebase-admin/app";
+import { initializeApp } from "firebase-admin/app";
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
-import { FIREBASE_CREDENTIALS_PATH } from "./config";
 
-const serviceAccount = require(FIREBASE_CREDENTIALS_PATH);
-initializeApp({ credential: cert(serviceAccount) });
+initializeApp();
 const db = getFirestore();
 
 export type BotConfig = {
