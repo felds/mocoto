@@ -4,8 +4,8 @@ import { addCommandHandler, registerCommand } from "../util/discord";
 
 const command: ApplicationCommandData = {
   type: "CHAT_INPUT",
-  name: "shuffle",
-  description: "shuffle tracks.",
+  name: "shufflenext",
+  description: "shuffle only upcoming tracks.",
 };
 
 registerCommand(command);
@@ -20,7 +20,7 @@ addCommandHandler(command, async (interaction) => {
     return;
   }
 
-  await queue.shuffle();
+  await queue.shuffle(true);
 
   await interaction.reply({ content: "Shuffled", ephemeral: true });
 });
