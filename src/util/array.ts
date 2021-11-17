@@ -1,8 +1,8 @@
 export function shuffle<T>(arr: T[]) {
-  var len = arr.length;
-  var d = len;
-  var array = [];
-  var k, i;
+  let len = arr.length;
+  const d = len;
+  const array = [];
+  let k, i;
   for (i = 0; i < d; i++) {
     k = Math.floor(Math.random() * len);
     array.push(arr[k]);

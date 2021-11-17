@@ -96,10 +96,10 @@ export class Queue {
   }
 
   shuffle(next: Boolean = false): void {
-    var [current] = this.tracks.splice(this.pos, 1);
+    const [current] = this.tracks.splice(this.pos, 1);
     if (next) {
-      var nextTracks = shuffle(this.tracks.slice(this.pos));
-      var history = this.tracks.slice(0, this.pos);
+      const nextTracks = shuffle(this.tracks.slice(this.pos));
+      const history = this.tracks.slice(0, this.pos);
       this.tracks = history.concat(nextTracks);
 
       this.tracks.splice(this.pos, 0, current);
