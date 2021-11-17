@@ -87,8 +87,12 @@ export class Queue {
     this.tracks.push(track);
   }
 
-  getTracks(): [tracks: Track[], current: number] {
-    return [this.tracks.slice(Math.max(0, this.pos - 1)), this.pos];
+  getTracks(): Track[] {
+    return this.tracks;
+  }
+
+  getCurrent(): number {
+    return this.pos;
   }
 
   shuffle(next: Boolean = false): void {
