@@ -1,4 +1,7 @@
-import { joinVoiceChannel } from "@discordjs/voice";
+import {
+  DiscordGatewayAdapterCreator,
+  joinVoiceChannel,
+} from "@discordjs/voice";
 import {
   ApplicationCommandData,
   BaseGuildVoiceChannel,
@@ -14,7 +17,16 @@ export function registerCommand(command: ApplicationCommandData): void {
     console.log(`Registering command /${command.name}`);
 
     const acm = client.application?.commands;
-    if (acm) acm.create(command, GUILD_ID);
+    if (acm) {
+      if (GUILD_ID) {
+        // create commands for the guild only
+        acm.create(command, GUILD_ID);
+      } else {
+        // create commands for all guilds
+        // it may take up to 2 hours to take effect
+        acm.create(command);
+      }
+    }
   });
 }
 
@@ -58,11 +70,13 @@ export function join(
     throw new JoinError(`I can't join channel ${channel.name}.`);
   }
 
+  const adapterCreator = channel.guild
+    .voiceAdapterCreator as DiscordGatewayAdapterCreator;
+
   return joinVoiceChannel({
     channelId: channel.id,
     guildId: channel.guildId,
-    // @ts-ignore
-    adapterCreator: channel.guild.voiceAdapterCreator,
+    adapterCreator,
   });
 }
 export class JoinError extends Error {}

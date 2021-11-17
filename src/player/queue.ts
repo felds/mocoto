@@ -9,8 +9,11 @@ import {
   StreamType,
   VoiceConnection,
 } from "@discordjs/voice";
+
 import { Collection } from "discord.js";
 import { shuffle } from "../util/array";
+import { QueuePlugin } from "./queue-plugin";
+import Announcer from "./queue-plugin/announcer";
 import { Track } from "./track";
 
 const MAX_MISSED_FRAMES = 1000;
@@ -18,7 +21,9 @@ const MAX_MISSED_FRAMES = 1000;
 export class Queue {
   private tracks: Track[] = [];
   private audioPlayer: AudioPlayer | null = null;
-  private pos: number = 0;
+  private pos = 0;
+  private seek = 0;
+  private plugins: QueuePlugin[] = [];
 
   constructor(private guildId: string) {}
 
@@ -61,12 +66,21 @@ export class Queue {
       return;
     }
 
-    const source = await currTrack.getSource();
+    const source = await currTrack.getSource(this.seek);
     const resource = createAudioResource(source, {
-      inputType: StreamType.Arbitrary,
+      inputType: StreamType.Opus,
       inlineVolume: true,
     });
+
     this.getAudioPlayer().play(resource);
+
+    this.plugins.forEach((plugin) =>
+      plugin.onPlay?.({
+        queue: this,
+        track: currTrack,
+        guildId: this.guildId,
+      }),
+    );
   }
 
   async addTrack(track: Track) {
@@ -82,7 +96,7 @@ export class Queue {
   }
 
   getTrack(): [track: Track, position: number] {
-    var position = 0;
+    let position = 0;
 
     if (this.audioPlayer?.state.status == AudioPlayerStatus.Playing) {
       position = this.audioPlayer?.state.playbackDuration;
@@ -103,6 +117,11 @@ export class Queue {
         player.unpause();
         return;
     }
+  }
+
+  async seekTo(time: number) {
+    this.seek = time;
+    await this.playForRealsies();
   }
 
   async pause() {
@@ -151,12 +170,20 @@ export class Queue {
       status === AudioPlayerStatus.AutoPaused
     );
   }
+
+  public addPlugin(plugin: QueuePlugin): void {
+    this.plugins.push(plugin);
+  }
 }
 
 const queues = new Collection<string, Queue>();
 export function getQueue(guildId: string): Queue {
-  const queue = queues.get(guildId) ?? new Queue(guildId);
-  queues.set(guildId, queue);
+  const existingQueue = queues.get(guildId);
+  if (existingQueue) return existingQueue;
 
-  return queue;
+  const newQueue = new Queue(guildId);
+  newQueue.addPlugin(Announcer);
+
+  queues.set(guildId, newQueue);
+  return newQueue;
 }

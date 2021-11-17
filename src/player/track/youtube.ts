@@ -1,9 +1,10 @@
 import { GuildMember } from "discord.js";
-import ytdl, {
+import {
   chooseFormatOptions as ChooseFormatOptions,
   videoFormat as VideoFormat,
   videoInfo as VideoInfo,
 } from "ytdl-core";
+import ytdl from "discord-ytdl-core";
 import type { Track } from "../track";
 
 export class YoutubeTrack implements Track {
@@ -27,8 +28,16 @@ export class YoutubeTrack implements Track {
     return this.info.videoDetails.title;
   }
 
-  async getSource() {
-    return ytdl(this.url, YoutubeTrack.formatOptions);
+  get title() {
+    return this.info.videoDetails.title;
+  }
+
+  async getSource(seek = 0) {
+    return ytdl(this.url, {
+      ...YoutubeTrack.formatOptions,
+      seek,
+      opusEncoded: true,
+    });
   }
 
   get duration() {

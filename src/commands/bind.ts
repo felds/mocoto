@@ -1,5 +1,5 @@
 import { ApplicationCommandData, TextChannel } from "discord.js";
-import { getBot } from "../bot";
+import { setPref } from "../prefs";
 import { addCommandHandler, registerCommand } from "../util/discord";
 import { createBaseEmbed } from "../util/message";
 
@@ -24,8 +24,7 @@ addCommandHandler(command, async (interaction) => {
   const guildId = interaction.guildId;
   const channel = interaction.options.getChannel("channel") as TextChannel;
 
-  const bot = getBot(guildId);
-  bot.textChannel = channel;
+  await setPref(guildId, "textChannelId", channel.id);
 
   const embed = createBaseEmbed().setDescription(
     `From now on, I'll only speak on **${channel}**.`,
