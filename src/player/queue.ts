@@ -10,6 +10,7 @@ import {
   VoiceConnection,
 } from "@discordjs/voice";
 import { Collection } from "discord.js";
+import { shuffle } from "../util/array";
 import { Track } from "./track";
 
 const MAX_MISSED_FRAMES = 1000;
@@ -74,6 +75,10 @@ export class Queue {
 
   getTracks(): [tracks: Track[], current: number] {
     return [this.tracks.slice(Math.max(0, this.pos - 1)), this.pos];
+  }
+
+  shuffle(next: Boolean = false): void {
+    this.tracks = shuffle(this.tracks);
   }
 
   getTrack(): [track: Track, position: number] {
