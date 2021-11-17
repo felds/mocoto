@@ -104,18 +104,7 @@ export class Queue {
 
       this.tracks.splice(this.pos, 0, current);
     } else {
-    var [current] = this.tracks.splice(this.pos, 1);
-      this.tracks.unshift(current);
-      this.pos = 0;
-    }
-    if (next) {
-      var nextTracks = shuffle(this.tracks.slice(this.pos));
-      var history = this.tracks.slice(0, this.pos);
-      this.tracks = history.concat(nextTracks);
-
-      this.tracks.splice(this.pos, 0, current);
-    } else {
-    this.tracks = shuffle(this.tracks);
+      this.tracks = shuffle(this.tracks);
       this.tracks.unshift(current);
       this.pos = 0;
     }
