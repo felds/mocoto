@@ -1,12 +1,11 @@
 import { ApplicationCommandData } from "discord.js";
 import { getQueue } from "../player/queue";
 import { addCommandHandler, registerCommand } from "../util/discord";
-import { msToDuration } from "../util/string";
 
 const command: ApplicationCommandData = {
   type: "CHAT_INPUT",
-  name: "np",
-  description: "current track info.",
+  name: "shufflenext",
+  description: "shuffle only upcoming tracks.",
 };
 
 registerCommand(command);
@@ -14,16 +13,14 @@ registerCommand(command);
 addCommandHandler(command, async (interaction) => {
   const guild = interaction.guild!;
   const queue = getQueue(guild.id);
-  const [track, position] = queue.getTrack();
+  const list = queue.getTracks();
 
-  if (!track) {
-    await interaction.reply({ content: "No Track", ephemeral: true });
+  if (!list.length) {
+    await interaction.reply({ content: "No Tracks", ephemeral: true });
     return;
   }
 
-  const str = `Now Playing:\n${track} - ${msToDuration(
-    position,
-  )} -- ${msToDuration(track.duration)}`;
+  await queue.shuffle(true);
 
-  await interaction.reply({ content: str, ephemeral: true });
+  await interaction.reply({ content: "Shuffled", ephemeral: true });
 });

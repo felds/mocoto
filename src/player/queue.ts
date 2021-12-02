@@ -9,7 +9,9 @@ import {
   StreamType,
   VoiceConnection,
 } from "@discordjs/voice";
+
 import { Collection } from "discord.js";
+import { shuffle } from "../util/array";
 import { QueuePlugin } from "./queue-plugin";
 import Announcer from "./queue-plugin/announcer";
 import ErrorReporter from "./queue-plugin/error-reporter";
@@ -92,8 +94,27 @@ export class Queue {
     this.tracks.push(track);
   }
 
-  getTracks(): [tracks: Track[], current: number] {
-    return [this.tracks.slice(Math.max(0, this.pos - 1)), this.pos];
+  getTracks(): Track[] {
+    return this.tracks;
+  }
+
+  getCurrent(): number {
+    return this.pos;
+  }
+
+  shuffle(next: Boolean = false): void {
+    const [current] = this.tracks.splice(this.pos, 1);
+    if (next) {
+      const nextTracks = shuffle(this.tracks.slice(this.pos));
+      const history = this.tracks.slice(0, this.pos);
+      this.tracks = history.concat(nextTracks);
+
+      this.tracks.splice(this.pos, 0, current);
+    } else {
+      this.tracks = shuffle(this.tracks);
+      this.tracks.unshift(current);
+      this.pos = 0;
+    }
   }
 
   getTrack(): [track: Track, position: number] {
