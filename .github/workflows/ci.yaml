@@ -2,7 +2,7 @@ name: Continuous Integration
 
 on:
   pull_request:
-    branches: [main]
+    branches: [ $default-branch ]
 
 jobs:
   prettier:
@@ -14,7 +14,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Prettify code
-        uses: creyD/prettier_action@v4.0
-        with:
-          only_changed: True
+      - name: Check prettier
+        run: |
+          npm ci
+          npx prettier --check '**/*.ts'
