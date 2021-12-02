@@ -7,9 +7,9 @@
     "dev": "nodemon index.ts",
     "build": "rm -fr dist && tsc",
     "start": "ts-node index.ts",
-    "pre-commit": "npm run format",
-    "format": "npx prettier -w \"*.ts\" \"src/**/*.ts\"",
-    "lint": "eslint --ignore-path .gitignore ."
+    "format:check": "prettier --check '*.ts' 'src/**/*.ts'",
+    "format:fix": "prettier --write '*.ts' 'src/**/*.ts'",
+    "lint:check": "eslint --ignore-path .gitignore ."
   },
   "keywords": [
     "discord",
