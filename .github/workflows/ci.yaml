@@ -16,5 +16,5 @@ jobs:
 
       - name: Check prettier
         run: |
-          npm ci
+          npm install prettier --no-save prettier
           npx prettier --check '**/*.ts'
