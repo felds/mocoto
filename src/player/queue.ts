@@ -14,6 +14,7 @@ import { Collection } from "discord.js";
 import { shuffle } from "../util/array";
 import { QueuePlugin } from "./queue-plugin";
 import Announcer from "./queue-plugin/announcer";
+import ErrorReporter from "./queue-plugin/error-reporter";
 import { Track } from "./track";
 
 const MAX_MISSED_FRAMES = 1000;
@@ -42,6 +43,12 @@ export class Queue {
         },
       });
       this.audioPlayer.on("stateChange", this.handleStateChange.bind(this));
+      /** @todo call reporter here */
+      this.audioPlayer.on("error", (error) => {
+        this.plugins.forEach((plugin) =>
+          plugin.onError?.({ queue: this, error }),
+        );
+      });
       this.getConnection().subscribe(this.audioPlayer);
     }
 
@@ -95,7 +102,7 @@ export class Queue {
     return this.pos;
   }
 
-  shuffle(next: Boolean = false): void {
+  shuffle(next = false): void {
     const [current] = this.tracks.splice(this.pos, 1);
     if (next) {
       const nextTracks = shuffle(this.tracks.slice(this.pos));
@@ -198,6 +205,7 @@ export function getQueue(guildId: string): Queue {
 
   const newQueue = new Queue(guildId);
   newQueue.addPlugin(Announcer);
+  newQueue.addPlugin(ErrorReporter);
 
   queues.set(guildId, newQueue);
   return newQueue;
