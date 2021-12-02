@@ -9,7 +9,8 @@
     "start": "ts-node index.ts",
     "format:check": "prettier --check '*.ts' 'src/**/*.ts'",
     "format:fix": "prettier --write '*.ts' 'src/**/*.ts'",
-    "lint:check": "eslint --ignore-path .gitignore ."
+    "lint:check": "eslint --ignore-path .gitignore .",
+    "lint:fix": "eslint --ignore-path .gitignore . --fix"
   },
   "keywords": [
     "discord",

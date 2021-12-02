@@ -102,7 +102,7 @@ export class Queue {
     return this.pos;
   }
 
-  shuffle(next: Boolean = false): void {
+  shuffle(next = false): void {
     const [current] = this.tracks.splice(this.pos, 1);
     if (next) {
       const nextTracks = shuffle(this.tracks.slice(this.pos));
