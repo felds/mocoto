@@ -26,7 +26,7 @@ export class Queue {
   private seek = 0;
   readonly event = new SubscribableEmitter<QueuePlugin>();
 
-  constructor(private guildId: string) {}
+  constructor(readonly guildId: string) {}
 
   private getConnection(): VoiceConnection {
     const connection = getVoiceConnection(this.guildId);
@@ -80,7 +80,6 @@ export class Queue {
     this.event.emit("play", {
       queue: this,
       track: currTrack,
-      guildId: this.guildId,
     });
   }
 

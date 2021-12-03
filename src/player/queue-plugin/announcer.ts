@@ -23,8 +23,8 @@ client.on("interactionCreate", async (interaction) => {
   console.log("buttonInteraction", interaction.customId);
 });
 
-const play: QueuePlugin["play"] = async (params) => {
-  const { guildId, track } = params;
+const play: QueuePlugin["play"] = async ({ queue, track }) => {
+  const { guildId } = queue;
 
   const textChannelId = await getPref(guildId, "textChannelId");
   if (!textChannelId) return;
