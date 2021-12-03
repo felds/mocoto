@@ -8,7 +8,6 @@ export const TOKEN = process.env.TOKEN;
 
 export const GUILD_ID = process.env.GUILD_ID;
 
-process.env.GOOGLE_APPLICATION_CREDENTIALS;
 assert(
   process.env.GOOGLE_APPLICATION_CREDENTIALS,
   "Please set the parameter GOOGLE_APPLICATION_CREDENTIALS.",
