@@ -9,9 +9,9 @@ import {
   StreamType,
   VoiceConnection,
 } from "@discordjs/voice";
-
 import { Collection } from "discord.js";
 import { shuffle } from "../util/array";
+import { SubscribableEmitter } from "../util/event";
 import { QueuePlugin } from "./queue-plugin";
 import Announcer from "./queue-plugin/announcer";
 import ErrorReporter from "./queue-plugin/error-reporter";
@@ -24,7 +24,7 @@ export class Queue {
   private audioPlayer: AudioPlayer | null = null;
   private pos = 0;
   private seek = 0;
-  private plugins: QueuePlugin[] = [];
+  readonly event = new SubscribableEmitter<QueuePlugin>();
 
   constructor(private guildId: string) {}
 
@@ -43,11 +43,8 @@ export class Queue {
         },
       });
       this.audioPlayer.on("stateChange", this.handleStateChange.bind(this));
-      /** @todo call reporter here */
       this.audioPlayer.on("error", (error) => {
-        this.plugins.forEach((plugin) =>
-          plugin.onError?.({ queue: this, error }),
-        );
+        this.event.emit("error", { queue: this, error });
       });
       this.getConnection().subscribe(this.audioPlayer);
     }
@@ -80,14 +77,11 @@ export class Queue {
     });
 
     this.getAudioPlayer().play(resource);
-
-    this.plugins.forEach((plugin) =>
-      plugin.onPlay?.({
-        queue: this,
-        track: currTrack,
-        guildId: this.guildId,
-      }),
-    );
+    this.event.emit("play", {
+      queue: this,
+      track: currTrack,
+      guildId: this.guildId,
+    });
   }
 
   async addTrack(track: Track) {
@@ -192,10 +186,6 @@ export class Queue {
       status === AudioPlayerStatus.AutoPaused
     );
   }
-
-  public addPlugin(plugin: QueuePlugin): void {
-    this.plugins.push(plugin);
-  }
 }
 
 const queues = new Collection<string, Queue>();
@@ -204,8 +194,9 @@ export function getQueue(guildId: string): Queue {
   if (existingQueue) return existingQueue;
 
   const newQueue = new Queue(guildId);
-  newQueue.addPlugin(Announcer);
-  newQueue.addPlugin(ErrorReporter);
+
+  newQueue.event.addSubscriber(Announcer);
+  newQueue.event.addSubscriber(ErrorReporter);
 
   queues.set(guildId, newQueue);
   return newQueue;

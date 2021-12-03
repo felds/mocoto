@@ -1,11 +1,10 @@
 import { QueuePlugin } from "../queue-plugin";
 
-const onError: QueuePlugin["onError"] = async (params) => {
-  console.log("Olha o erro, mano!", params);
+const error: QueuePlugin["error"] = async ({ error }) => {
+  console.log("Olha o erro, mano!", error);
 };
 
 const ErrorReporter: QueuePlugin = {
-  onError,
+  error,
 };
-
 export default ErrorReporter;
