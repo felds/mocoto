@@ -1,5 +1,6 @@
 import { generateDependencyReport } from "@discordjs/voice";
 import { join } from "path";
+import { homeAlone } from "./src/client-events/home-alone";
 import { TOKEN } from "./src/config";
 import { client } from "./src/discord";
 import { importDir } from "./src/util/fs";
@@ -18,6 +19,7 @@ async function main() {
   client.login(TOKEN);
 
   client.on("ready", () => console.log("Ready!!"));
+  client.on("voiceStateUpdate", homeAlone);
 }
 main().catch((err) => console.error("Panic while setting up.", err));
 

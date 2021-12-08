@@ -9,7 +9,7 @@ import {
   StreamType,
   VoiceConnection,
 } from "@discordjs/voice";
-import { Collection } from "discord.js";
+import { Collection, Guild } from "discord.js";
 import { shuffle } from "../util/array";
 import { SubscribableEmitter } from "../util/event";
 import { QueuePlugin } from "./queue-plugin";
@@ -187,13 +187,16 @@ export class Queue {
   }
 
   destroy() {
-    this.getConnection().destroy();
+    console.log("Destruino");
     this.clear();
+    this.getConnection().destroy();
   }
 }
 
 const queues = new Collection<string, Queue>();
-export function getQueue(guildId: string): Queue {
+export function getQueue(guild: string | Guild): Queue {
+  const guildId = guild instanceof Guild ? guild.id : guild;
+
   const existingQueue = queues.get(guildId);
   if (existingQueue) return existingQueue;
 
