@@ -1,6 +1,8 @@
 import { ListenerSignature, TypedEmitter } from "tiny-typed-emitter";
 
-export class SubscribableEmitter<L extends ListenerSignature<L>> extends TypedEmitter<L> {
+export class SubscribableEmitter<
+  L extends ListenerSignature<L>,
+> extends TypedEmitter<L> {
   private subscribers = new Set<L>();
 
   addSubscriber(subscriber: L) {
