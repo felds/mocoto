@@ -2,6 +2,7 @@ import { getVoiceConnection, VoiceConnectionStatus } from "@discordjs/voice";
 import { ApplicationCommandData } from "discord.js";
 import { getQueue } from "../player/queue";
 import { addCommandHandler, registerCommand } from "../util/discord";
+import { createBaseEmbed } from "../util/message";
 
 const command: ApplicationCommandData = {
   name: "leave",
@@ -29,5 +30,8 @@ addCommandHandler(command, async (interaction) => {
   const queue = getQueue(guildId);
   queue.destroy();
 
-  interaction.reply({ content: "See you later, crocodile! 👋" });
+  const embed = createBaseEmbed();
+  embed.setDescription("👋 see ya!");
+
+  interaction.reply({ embeds: [embed], ephemeral: true });
 });

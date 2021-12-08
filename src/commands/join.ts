@@ -5,6 +5,7 @@ import {
   JoinError,
   registerCommand,
 } from "../util/discord";
+import { createBaseEmbed } from "../util/message";
 
 const command: ApplicationCommandData = {
   type: "CHAT_INPUT",
@@ -33,10 +34,10 @@ addCommandHandler(command, async (interaction) => {
   try {
     join(member, channelOption);
 
-    return interaction.reply({
-      content: `I'm in. 😎`,
-      ephemeral: true,
-    });
+    const embed = createBaseEmbed();
+    embed.setDescription("I'm in. 😎");
+
+    interaction.reply({ embeds: [embed], ephemeral: true });
   } catch (err) {
     if (err instanceof JoinError)
       return interaction.reply({ content: err.message, ephemeral: true });
