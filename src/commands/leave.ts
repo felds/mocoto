@@ -1,5 +1,6 @@
 import { getVoiceConnection, VoiceConnectionStatus } from "@discordjs/voice";
 import { ApplicationCommandData } from "discord.js";
+import { getQueue } from "../player/queue";
 import { addCommandHandler, registerCommand } from "../util/discord";
 
 const command: ApplicationCommandData = {
@@ -13,7 +14,8 @@ registerCommand(command);
 addCommandHandler(command, async (interaction) => {
   if (!interaction.inGuild()) return;
 
-  const connection = getVoiceConnection(interaction.guildId);
+  const { guildId } = interaction;
+  const connection = getVoiceConnection(guildId);
 
   const isConnected =
     connection &&
@@ -26,4 +28,7 @@ addCommandHandler(command, async (interaction) => {
 
   interaction.reply({ content: "See you later, crocodile! 👋" });
   connection.disconnect();
+
+  const queue = getQueue(guildId);
+  queue.clear();
 });
