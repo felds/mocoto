@@ -185,6 +185,11 @@ export class Queue {
       status === AudioPlayerStatus.AutoPaused
     );
   }
+
+  destroy() {
+    this.getConnection().destroy();
+    this.clear();
+  }
 }
 
 const queues = new Collection<string, Queue>();

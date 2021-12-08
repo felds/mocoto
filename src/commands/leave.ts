@@ -26,9 +26,8 @@ addCommandHandler(command, async (interaction) => {
     return;
   }
 
-  interaction.reply({ content: "See you later, crocodile! 👋" });
-  connection.disconnect();
-
   const queue = getQueue(guildId);
-  queue.clear();
+  queue.destroy();
+
+  interaction.reply({ content: "See you later, crocodile! 👋" });
 });
