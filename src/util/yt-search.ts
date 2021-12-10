@@ -14,7 +14,7 @@ export class YTSearch {
   private _correctedQuery = "";
   private _lastResult: ytsr.ContinueResult | null = null;
   private _status: Status = Status.UNINITIALIZED;
-  private resultsCache: ytsr.Item[] = [];
+  private resultsCache: ytsr.Video[] = [];
 
   constructor(readonly query: string, readonly pageSize: number = 7) {}
 
@@ -42,6 +42,7 @@ export class YTSearch {
           this._lastResult = res;
 
           // add results to cache
+          assertVideo(res.items);
           this.resultsCache.push(...res.items);
         }
         break;
@@ -56,6 +57,7 @@ export class YTSearch {
           if (!res.continuation) this._status = Status.FINISHED;
 
           // add results to cache
+          assertVideo(res.items);
           this.resultsCache.push(...res.items);
         }
         break;
@@ -65,7 +67,7 @@ export class YTSearch {
     }
   }
 
-  public async page(n: number) {
+  public async page(n: number): Promise<ytsr.Video[]> {
     const start = n * this.pageSize;
     const end = Math.min(start + this.pageSize, this.totalResults ?? Infinity);
     while (!this._lastResult || end > this.resultsCache.length) {
@@ -88,5 +90,11 @@ export class YTSearch {
     return this._totalResults !== undefined
       ? Math.ceil(this._totalResults / this.pageSize)
       : undefined;
+  }
+}
+
+function assertVideo(items: ytsr.Item[]): asserts items is ytsr.Video[] {
+  for (const i of items) {
+    assert(i.type === "video");
   }
 }
