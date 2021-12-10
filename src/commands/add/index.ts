@@ -83,21 +83,6 @@ addCommandHandler(command, async (interaction) => {
     if (err instanceof Error)
       console.log("err while awaiting for interactions", err);
   }
-
-  // // prettier-ignore
-  // const components: MessageOptions['components'] =
-  // [
-  //   {type: "ACTION_ROW", components: [
-  //     { type: "SELECT_MENU", customId: 'track', minValues: 0, maxValues: 2, options: [
-  //       { value: 'rappa', label: "O Rappa - My Brother", emoji: '♾' },
-  //       { value: 'salva', label: "Salvatore Ganacci - Heartbass (feat. Tommy Cash) [Official Audio]", emoji: '▶️' },
-  //     ] },
-  //   ]},
-  //   {type: "ACTION_ROW", components: [
-  //     { type: "BUTTON", customId: 'prev', style: "PRIMARY", label: "Prev", disabled: true },
-  //     { type: "BUTTON", customId: 'next', style: "PRIMARY", label: "Next" },
-  //   ]},
-  // ];
 });
 
 async function buildComponents(
@@ -141,6 +126,12 @@ async function buildComponents(
           label: "Next",
           style: "SUCCESS",
           disabled: page >= search.pages,
+        },
+        {
+          type: "BUTTON",
+          customId: "fix",
+          label: `Did you mean: Jorge`,
+          style: "SECONDARY",
         },
       ],
     },
