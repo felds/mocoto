@@ -19,8 +19,6 @@ client.on("interactionCreate", async (interaction) => {
       return;
     }
   }
-
-  console.log("buttonInteraction", interaction.customId);
 });
 
 const play: QueuePlugin["play"] = async ({ queue, track }) => {
