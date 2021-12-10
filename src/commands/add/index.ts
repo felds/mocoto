@@ -11,6 +11,8 @@ import {
 import { addCommandHandler, registerCommand } from "../../util/discord";
 import { setTimeout } from "timers/promises";
 import assert from "assert/strict";
+import { YTSearch } from "../../util/yt-search";
+import ytsr from "ytsr";
 
 const command: ApplicationCommandData = {
   name: "add",
@@ -32,36 +34,47 @@ registerCommand(command);
 addCommandHandler(command, async (interaction) => {
   await interaction.deferReply();
 
-  await setTimeout(100);
+  const query = interaction.options.getString("query")!;
 
   let page = 0;
+  const search = new YTSearch(query, 10);
+  await search.load();
 
   // prettier-ignore
   const reply = (await interaction.editReply({
     content: "e aí? o que vai ser",
-    components: buildComponents(page, 5),
+    components: await buildComponents(page, search),
   })) as Message;
 
   try {
     for (;;) {
       const componentInteraction = await reply.awaitMessageComponent({});
+      componentInteraction.deferUpdate();
       switch (componentInteraction.customId) {
         case "prev":
           {
             page--;
+            const results = await search.page(page);
             componentInteraction.update({
               content: `Página ${page}`,
-              components: buildComponents(page, 5),
+              components: await buildComponents(page, search),
             });
           }
           break;
         case "next":
           {
             page++;
+            const results = await search.page(page);
             componentInteraction.update({
               content: `Página ${page}`,
-              components: buildComponents(page, 5),
+              components: await buildComponents(page, search),
             });
+          }
+          break;
+        case "track":
+          {
+            assert(componentInteraction.isSelectMenu());
+            console.log("Adicionando vídeos", componentInteraction.values);
           }
           break;
       }
@@ -87,11 +100,31 @@ addCommandHandler(command, async (interaction) => {
   // ];
 });
 
-function buildComponents(
+async function buildComponents(
   page: number,
-  numPages: number,
-): MessageOptions["components"] {
+  search: YTSearch,
+): Promise<MessageOptions["components"]> {
+  const results = await search.page(page);
+  assert(search.pages);
+
   return [
+    {
+      type: "ACTION_ROW",
+      components: [
+        {
+          type: "SELECT_MENU",
+          customId: "track",
+          minValues: 0,
+          maxValues: results.length,
+          options: results.map((r) => ({
+            /** @todo better labels */
+            label: r.title,
+            description: r.author?.name,
+            value: r.url,
+          })),
+        },
+      ],
+    },
     {
       type: "ACTION_ROW",
       components: [
@@ -107,7 +140,7 @@ function buildComponents(
           customId: "next",
           label: "Next",
           style: "SUCCESS",
-          disabled: page >= numPages,
+          disabled: page >= search.pages,
         },
       ],
     },
