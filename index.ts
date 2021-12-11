@@ -1,8 +1,8 @@
 import { generateDependencyReport } from "@discordjs/voice";
+import { Gatekeeper } from "@itsmapleleaf/gatekeeper";
 import { join } from "path";
 import { TOKEN } from "./src/config";
 import { client } from "./src/discord";
-import { importDir } from "./src/util/fs";
 
 // make nodemon more usable
 console.clear();
@@ -11,13 +11,13 @@ console.clear();
 console.log(generateDependencyReport());
 
 async function main() {
-  // import all commands from the commands folder
-  await importDir(join(__dirname, "src/commands"));
+  const gatekeeper = await Gatekeeper.create({
+    client,
+    commandFolder: join(__dirname, "src/commands"),
+  });
 
   // once everything is loaded, log in
   client.login(TOKEN);
-
-  client.on("ready", () => console.log("Ready!!"));
 }
 main().catch((err) => console.error("Panic while setting up.", err));
 
