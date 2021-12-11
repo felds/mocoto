@@ -1,8 +1,7 @@
 import { embedComponent, Gatekeeper } from "@itsmapleleaf/gatekeeper";
 import assert from "assert/strict";
-import { ApplicationCommandData, TextChannel } from "discord.js";
+import { TextChannel } from "discord.js";
 import { setPref } from "../prefs";
-import { addCommandHandler, registerCommand } from "../util/discord";
 import { createBaseEmbed } from "../util/message";
 
 export default function bindCommand(gatekeeper: Gatekeeper) {
