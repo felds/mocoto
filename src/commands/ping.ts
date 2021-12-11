@@ -1,14 +1,11 @@
-import { ApplicationCommandData } from "discord.js";
-import { addCommandHandler, registerCommand } from "../util/discord";
+import { Gatekeeper } from "@itsmapleleaf/gatekeeper";
 
-const command: ApplicationCommandData = {
-  type: "CHAT_INPUT",
-  name: "ping",
-  description: "Replies with pong.",
-};
-
-registerCommand(command);
-
-addCommandHandler(command, async (interaction) => {
-  await interaction.reply({ content: "Pong!", ephemeral: true });
-});
+export default function pingCommand(gatekeeper: Gatekeeper) {
+  gatekeeper.addSlashCommand({
+    name: "ping",
+    description: "Replies with pong.",
+    async run(interaction) {
+      interaction.ephemeralReply(() => ["pong! :ping_pong:"]);
+    },
+  });
+}
