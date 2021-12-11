@@ -1,28 +1,26 @@
-import { getVoiceConnection } from "@discordjs/voice";
-import { ApplicationCommandData, GuildMember } from "discord.js";
+import { embedComponent, Gatekeeper } from "@itsmapleleaf/gatekeeper";
+import assert from "assert/strict";
 import { getQueue } from "../player/queue";
-import { addCommandHandler, join, registerCommand } from "../util/discord";
+import { createBaseEmbed } from "../util/message";
 
-const command: ApplicationCommandData = {
-  name: "resume",
-  description: "Play a track if is paused.",
-  type: "CHAT_INPUT",
-};
+export default function resumeCommand(gatekeeper: Gatekeeper) {
+  gatekeeper.addSlashCommand({
+    name: "resume",
+    description: "Play a track if is paused.",
+    async run(context) {
+      const guild = context.guild;
 
-registerCommand(command);
+      assert(guild);
+      const queue = getQueue(guild.id);
 
-addCommandHandler(command, async (interaction) => {
-  const member = interaction.member as GuildMember;
-  const guild = interaction.guild!;
-  const queue = getQueue(guild.id);
+      /** @todo check connection */
 
-  const connection = getVoiceConnection(guild.id);
-  if (!connection) {
-    join(member);
-  }
+      if (queue.isPaused()) {
+        queue.play();
+      }
 
-  if (queue.isPaused()) {
-    queue.play();
-  }
-  interaction.replied || interaction.reply({ content: "👌", ephemeral: true });
-});
+      const embed = createBaseEmbed().setDescription(":ok:");
+      return context.ephemeralReply(() => [embedComponent(embed)]);
+    },
+  });
+}
