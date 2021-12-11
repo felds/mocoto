@@ -1,24 +1,21 @@
-import { ApplicationCommandData } from "discord.js";
+import { embedComponent, Gatekeeper } from "@itsmapleleaf/gatekeeper";
+import assert from "assert/strict";
 import { getQueue } from "../player/queue";
-import { addCommandHandler, registerCommand } from "../util/discord";
+import { createBaseEmbed } from "../util/message";
 
-const command: ApplicationCommandData = {
-  name: "next",
-  description: "Skips the current track.",
-  type: "CHAT_INPUT",
-};
+export default function nextCommand(gatekeeper: Gatekeeper) {
+  gatekeeper.addSlashCommand({
+    name: "next",
+    description: "Skips the current track.",
+    async run(context) {
+      const guild = context.guild;
+      assert(guild);
+      const queue = getQueue(guild.id);
 
-registerCommand(command);
+      queue.next();
 
-addCommandHandler(command, async (interaction) => {
-  const guild = interaction.guild!;
-  const queue = getQueue(guild.id);
-
-  queue.next();
-
-  /** @todo show track name */
-  interaction.reply({
-    content: "Beleza",
-    ephemeral: true,
+      const embed = createBaseEmbed().setDescription("Here it goes");
+      context.ephemeralReply(() => [embedComponent(embed)]);
+    },
   });
-});
+}
