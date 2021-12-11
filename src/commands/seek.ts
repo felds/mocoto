@@ -16,7 +16,7 @@ export default function seekCommand(gatekeeper: Gatekeeper) {
       time: {
         type: "STRING",
         description:
-          "The timestamp to go to. Combine with `+` or `-` to go forwards or backwards from the current position.",
+          "A timestamp to go to. Combine with +/- to go forwards/backwards from the current position.",
         required: true,
       },
     },
