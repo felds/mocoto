@@ -1,46 +1,33 @@
-import { ApplicationCommandData, GuildChannel, GuildMember } from "discord.js";
-import {
-  addCommandHandler,
-  join,
-  JoinError,
-  registerCommand,
-} from "../util/discord";
+import { embedComponent, Gatekeeper } from "@itsmapleleaf/gatekeeper";
+import { GuildMember } from "discord.js";
+import { join, JoinError } from "../util/discord";
 import { createBaseEmbed } from "../util/message";
 
-const command: ApplicationCommandData = {
-  type: "CHAT_INPUT",
-  name: "join",
-  description: "Join a voice channel.",
-  options: [
-    {
-      name: "channel",
-      type: "CHANNEL",
-      description: "The voice channel to join.",
-      channelTypes: ["GUILD_VOICE", "GUILD_STAGE_VOICE"],
+export default function joinCommand(gatekeeper: Gatekeeper) {
+  gatekeeper.addSlashCommand({
+    name: "join",
+    description: "Join a voice channel.",
+    options: {
+      channel: {
+        type: "CHANNEL",
+        description: "The voice channel to join.",
+        channelTypes: ["GUILD_VOICE", "GUILD_STAGE_VOICE"],
+      },
     },
-  ],
-};
+    run: (context) => {
+      const member = context.member as GuildMember;
+      const channelOption = context.options.channel;
 
-registerCommand(command);
-
-addCommandHandler(command, async (interaction) => {
-  if (!interaction.inGuild()) return;
-
-  const member = interaction.member as GuildMember;
-  const channelOption = interaction.options.getChannel(
-    "channel",
-  ) as GuildChannel | null;
-
-  try {
-    join(member, channelOption);
-
-    const embed = createBaseEmbed();
-    embed.setDescription("I'm in. 😎");
-
-    interaction.reply({ embeds: [embed], ephemeral: true });
-  } catch (err) {
-    if (err instanceof JoinError)
-      return interaction.reply({ content: err.message, ephemeral: true });
-    else throw err;
-  }
-});
+      try {
+        join(member, channelOption);
+        const embed = createBaseEmbed().setDescription("I'm in :sunglasses:");
+        context.ephemeralReply(() => [embedComponent(embed)]);
+      } catch (err) {
+        if (err instanceof JoinError) {
+          const message = err.message;
+          context.ephemeralReply(() => [message]);
+        } else throw err;
+      }
+    },
+  });
+}
