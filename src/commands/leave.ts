@@ -1,37 +1,28 @@
 import { getVoiceConnection, VoiceConnectionStatus } from "@discordjs/voice";
-import { ApplicationCommandData } from "discord.js";
-import { getQueue } from "../player/queue";
-import { addCommandHandler, registerCommand } from "../util/discord";
+import { embedComponent, Gatekeeper } from "@itsmapleleaf/gatekeeper";
+import { Guild } from "discord.js";
 import { createBaseEmbed } from "../util/message";
 
-const command: ApplicationCommandData = {
-  name: "leave",
-  description: "Leaves the voice channel.",
-  type: "CHAT_INPUT",
-};
+export default function leaveCommand(gatekeeper: Gatekeeper) {
+  gatekeeper.addSlashCommand({
+    name: "leave",
+    description: "Leaves the voice channel.",
+    async run(context) {
+      const guild = context.guild as Guild;
+      const connection = getVoiceConnection(guild.id);
 
-registerCommand(command);
+      const isConnected =
+        connection &&
+        connection.state.status !== VoiceConnectionStatus.Disconnected;
+      if (!isConnected) {
+        const embed = createBaseEmbed().setDescription("I'm not connected.");
+        return context.ephemeralReply(() => [embedComponent(embed)]);
+      }
 
-addCommandHandler(command, async (interaction) => {
-  if (!interaction.inGuild()) return;
+      connection.destroy();
 
-  const { guildId } = interaction;
-  const connection = getVoiceConnection(guildId);
-
-  const isConnected =
-    connection &&
-    connection.state.status !== VoiceConnectionStatus.Disconnected;
-
-  if (!isConnected) {
-    interaction.reply({ content: "I'm not even connected…" });
-    return;
-  }
-
-  const queue = getQueue(guildId);
-  queue.destroy();
-
-  const embed = createBaseEmbed();
-  embed.setDescription("👋 see ya!");
-
-  interaction.reply({ embeds: [embed], ephemeral: true });
-});
+      const embed = createBaseEmbed().setDescription(":wave: see ya!");
+      return context.ephemeralReply(() => [embedComponent(embed)]);
+    },
+  });
+}
