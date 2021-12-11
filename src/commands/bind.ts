@@ -1,37 +1,35 @@
+import { embedComponent, Gatekeeper } from "@itsmapleleaf/gatekeeper";
+import assert from "assert/strict";
 import { ApplicationCommandData, TextChannel } from "discord.js";
 import { setPref } from "../prefs";
 import { addCommandHandler, registerCommand } from "../util/discord";
 import { createBaseEmbed } from "../util/message";
 
-const command: ApplicationCommandData = {
-  type: "CHAT_INPUT",
-  name: "bind",
-  description: "Show bot messages in a specific channel.",
-  options: [
-    {
-      name: "channel",
-      required: true,
-      description: "The channel in which show the bot messages",
-      type: "CHANNEL",
-      channelTypes: ["GUILD_TEXT"],
+export default function bindCommand(gatekeeper: Gatekeeper) {
+  gatekeeper.addSlashCommand({
+    name: "bind",
+    description: "Show bot messages in a specific channel.",
+    options: {
+      channel: {
+        type: "CHANNEL",
+        channelTypes: ["GUILD_TEXT"],
+        description: "The channel in which show the bot messages",
+        required: true,
+      },
     },
-  ],
-};
+    async run(interaction) {
+      assert(interaction.guild);
 
-registerCommand(command);
+      const guild = interaction.guild;
+      const channel = interaction.options.channel as TextChannel;
 
-addCommandHandler(command, async (interaction) => {
-  const guildId = interaction.guildId;
-  const channel = interaction.options.getChannel("channel") as TextChannel;
+      await setPref(guild.id, "textChannelId", channel.id);
 
-  await setPref(guildId, "textChannelId", channel.id);
+      const embed = createBaseEmbed().setDescription(
+        `From now on, I'll only speak on **${channel}**.`,
+      );
 
-  const embed = createBaseEmbed().setDescription(
-    `From now on, I'll only speak on **${channel}**.`,
-  );
-
-  interaction.reply({
-    ephemeral: true,
-    embeds: [embed],
+      interaction.ephemeralReply(() => [embedComponent(embed)]);
+    },
   });
-});
+}
