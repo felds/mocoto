@@ -6,7 +6,7 @@ import {
   ApplicationCommandData,
   BaseGuildVoiceChannel,
   GuildChannel,
-  GuildCommandInteraction,
+  BaseCommandInteraction,
   GuildMember,
 } from "discord.js";
 import { GUILD_ID } from "../config";
@@ -32,7 +32,7 @@ export function registerCommand(command: ApplicationCommandData): void {
 
 export function addCommandHandler(
   command: ApplicationCommandData,
-  handler: (interaction: GuildCommandInteraction) => Promise<void>,
+  handler: (interaction: BaseCommandInteraction) => Promise<void>,
 ) {
   client.on("interactionCreate", (interaction) => {
     if (!interaction.isCommand()) return;
