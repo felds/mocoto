@@ -1,29 +1,34 @@
-import { ApplicationCommandData } from "discord.js";
+import { embedComponent, Gatekeeper } from "@itsmapleleaf/gatekeeper";
+import assert from "assert/strict";
 import { getQueue } from "../player/queue";
-import { addCommandHandler, registerCommand } from "../util/discord";
+import { createBaseEmbed } from "../util/message";
 import { msToDuration } from "../util/string";
 
-const command: ApplicationCommandData = {
-  type: "CHAT_INPUT",
-  name: "np",
-  description: "current track info.",
-};
+export default function nowPlayingCommand(gatekeeper: Gatekeeper) {
+  gatekeeper.addSlashCommand({
+    name: "now-playing",
+    description: "current track info.",
+    async run(context) {
+      const guild = context.guild;
+      assert(guild);
+      const queue = getQueue(guild.id);
+      const [track, position] = queue.getTrack();
 
-registerCommand(command);
+      if (!track) {
+        const embed = createBaseEmbed().setDescription(
+          "Not playing right now.\nUse `/play` to add tracks to the playlist.",
+        );
+        return context.ephemeralReply(() => [embedComponent(embed)]);
+      }
 
-addCommandHandler(command, async (interaction) => {
-  const guild = interaction.guild!;
-  const queue = getQueue(guild.id);
-  const [track, position] = queue.getTrack();
+      const posStr = msToDuration(position);
+      const durStr = msToDuration(track.duration);
 
-  if (!track) {
-    await interaction.reply({ content: "No Track", ephemeral: true });
-    return;
-  }
-
-  const str = `Now Playing:\n${track} - ${msToDuration(
-    position,
-  )} -- ${msToDuration(track.duration)}`;
-
-  await interaction.reply({ content: str, ephemeral: true });
-});
+      /** @todo Create a default embed for tracks */
+      const embed = createBaseEmbed().setDescription(
+        `Now Playing:\n${track} - ${posStr} -- ${durStr}`,
+      );
+      return context.ephemeralReply(() => [embedComponent(embed)]);
+    },
+  });
+}
