@@ -1,58 +1,50 @@
-import { getVoiceConnection } from "@discordjs/voice";
-import { ApplicationCommandData, GuildMember } from "discord.js";
+import { embedComponent, Gatekeeper } from "@itsmapleleaf/gatekeeper";
+import assert from "assert/strict";
 import { getQueue } from "../player/queue";
-import { addCommandHandler, join, registerCommand } from "../util/discord";
-import { msToDuration } from "../util/string";
+import { createBaseEmbed } from "../util/message";
 
-const command: ApplicationCommandData = {
-  name: "seek",
-  description: "seek.",
-  type: "CHAT_INPUT",
-  options: [
-    {
-      name: "time",
-      type: "STRING",
-      description: "Seek to time?",
-      required: true,
+/**
+ * @todo parse times in the formats: 1m23s, 1h23m45s, 1h45s, 123s 1:23 1:23:45.
+ *    every timestamp should be combined with + or -
+ *    to go forwards and backwards from the current position.
+ */
+export default function seekCommand(gatekeeper: Gatekeeper) {
+  gatekeeper.addSlashCommand({
+    name: "seek",
+    description: "Go to a specific timestamp in a track.",
+    options: {
+      time: {
+        type: "STRING",
+        description:
+          "The timestamp to go to. Combine with `+` or `-` to go forwards or backwards from the current position.",
+        required: true,
+      },
     },
-  ],
-};
+    async run(context) {
+      const guild = context.guild;
+      assert(guild);
 
-registerCommand(command);
+      /** @todo check connection */
 
-addCommandHandler(command, async (interaction) => {
-  const member = interaction.member as GuildMember;
-  const guild = interaction.guild!;
-  const queue = getQueue(guild.id);
+      const queue = getQueue(guild.id);
+      const [track] = queue.getTrack();
+      if (!track) {
+        const embed = createBaseEmbed().setDescription("No track to seek.");
+        return context.ephemeralReply(() => [embedComponent(embed)]);
+      }
 
-  const connection = getVoiceConnection(guild.id);
-  if (!connection) {
-    join(member);
-  }
-  const [track] = queue.getTrack();
+      const time = parseInt(context.options.time);
+      if (isNaN(time)) {
+        const embed = createBaseEmbed().setDescription("Invalid time.");
+        return context.ephemeralReply(() => [embedComponent(embed)]);
+      }
 
-  if (!track) {
-    await interaction.reply({ content: "No Track", ephemeral: true });
-    return;
-  }
+      await queue.seekTo(time);
 
-  const timeStr = interaction.options.getString("time")!;
-  const time = parseInt(timeStr);
-
-  if (isNaN(time)) {
-    interaction.replied ||
-      interaction.reply({ content: `invalid format`, ephemeral: true });
-    return;
-  }
-
-  await queue.seekTo(time);
-
-  const seekTo = time ? msToDuration(time * 1000) : "00:00:00";
-  const duration = msToDuration(track.duration);
-
-  interaction.replied ||
-    interaction.reply({
-      content: `✅ seeked to, ${seekTo} of ${duration}`,
-      ephemeral: true,
-    });
-});
+      const embed = createBaseEmbed().setDescription(
+        "✅ sought to, ${seekTo} of ${duration}`",
+      );
+      return context.ephemeralReply(() => [embedComponent(embed)]);
+    },
+  });
+}
