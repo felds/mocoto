@@ -1,65 +1,63 @@
 import { getVoiceConnection } from "@discordjs/voice";
-import { ApplicationCommandData, GuildMember, MessageEmbed } from "discord.js";
+import { embedComponent, Gatekeeper } from "@itsmapleleaf/gatekeeper";
+import assert from "assert/strict";
+import { MessageEmbed } from "discord.js";
 import { loadTracks } from "../player/query-loader";
 import { getQueue } from "../player/queue";
 import { Track } from "../player/track";
-import { addCommandHandler, join, registerCommand } from "../util/discord";
+import { join } from "../util/discord";
 import { createBaseEmbed } from "../util/message";
 import { msToDuration } from "../util/string";
 
-const command: ApplicationCommandData = {
-  name: "play",
-  description: "Add a track to the playlist.",
-  type: "CHAT_INPUT",
-  options: [
-    {
-      name: "query",
-      type: "STRING",
-      description: "Something to search",
-      required: true,
+export default function playCommand(gatekeeper: Gatekeeper) {
+  gatekeeper.addSlashCommand({
+    name: "play",
+    description: "Add a track to the playlist.",
+    options: {
+      url: {
+        type: "STRING",
+        description: "Something to play",
+        required: true,
+      },
     },
-  ],
-};
+    async run(context) {
+      const member = context.member;
+      assert(member);
+      const guild = context.guild;
+      assert(guild);
 
-registerCommand(command);
+      const queue = getQueue(guild.id);
 
-addCommandHandler(command, async (interaction) => {
-  const member = interaction.member as GuildMember;
-  const guild = interaction.guild!;
-  const queue = getQueue(guild.id);
+      /** @fixme When "disconnected" with leave, getVoiceConnection still returns a connection. */
+      const connection = getVoiceConnection(guild.id);
+      if (!connection) {
+        join(member);
+      }
 
-  /** @fixme When "disconnected" with leave, getVoiceConnection still returns a connection. */
-  const connection = getVoiceConnection(guild.id);
-  if (!connection) {
-    join(member);
-  }
+      const { url } = context.options;
+      context.ephemeralDefer();
 
-  const query = interaction.options.getString("query");
-  if (query) {
-    await interaction.deferReply({ ephemeral: true });
+      const tracks = await loadTracks(member, url);
+      if (tracks) {
+        for (const track of tracks) queue.addTrack(track);
 
-    const tracks = await loadTracks(member, query);
-    if (tracks) {
-      const embeds = tracks.map((track) => {
-        queue.addTrack(track);
-        return createEmbed(track);
-      });
+        const embedComponents = tracks.map((track) => {
+          const embed = createEmbed(track);
+          return embedComponent(embed);
+        });
 
-      await interaction.editReply({
-        embeds,
-      });
-    } else {
-      // @TODO better message/embed
-      interaction.editReply("Track not found");
-    }
+        context.ephemeralReply(() => [...embedComponents]);
+      } else {
+        /** @todo add better embed */
+        context.ephemeralReply(() => "Track not found");
+      }
 
-    if (queue.isIdle()) {
-      queue.play();
-    }
-  }
-
-  // interaction.replied || interaction.reply({ content: "👌", ephemeral: true });
-});
+      if (queue.isIdle() || queue.isPaused()) {
+        queue.play();
+      }
+    },
+  });
+}
 
 function createEmbed(track: Track): MessageEmbed {
   const embed = createBaseEmbed();
